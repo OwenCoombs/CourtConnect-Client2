@@ -6,23 +6,34 @@ const PlayNow = () => {
     const { auth } = useContext(Context);
     const [query, setQuery] = useState('');
     const [courts, setCourts] = useState([]);
+    const [totalActiveUsers, setTotalActiveUsers] = useState(0); // Initialize totalActiveUsers state
 
+    // Fetch courts and initialize totalActiveUsers
     useEffect(() => {
         const fetchCourts = async () => {
             if (!auth || !auth.accessToken) {
                 console.error('No access token provided');
                 return;
             }
-
+    
             try {
                 const response = await getCourts({ auth });
                 if (response && Array.isArray(response)) {
-                    const courtsWithData = response.map(court => ({
-                        ...court,
-                        userActive: false,
-                        activeUsers: 0, // Initialize activeUsers count
-                    }));
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    const courtsWithData = response.map(court => {
+                        const userActive = !!storedActiveUsers[court.id];
+                        const activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
+                        return {
+                            ...court,
+                            userActive,
+                            activeUsers,
+                        };
+                    });
                     setCourts(courtsWithData);
+    
+                    // Calculate initial totalActiveUsers
+                    const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    setTotalActiveUsers(initialActiveUsers);
                 } else {
                     console.error('No data received for courts');
                 }
@@ -30,9 +41,10 @@ const PlayNow = () => {
                 console.error('Failed to fetch courts:', error);
             }
         };
-
+    
         fetchCourts();
     }, [auth]);
+    
 
     const handleInputChange = (event) => {
         setQuery(event.target.value);
@@ -44,24 +56,37 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         const payload = { auth, courtId, setActive: !currentActiveStatus };
-
+    
         try {
             await setActiveUser(payload);
             const updatedCourts = courts.map(court => {
                 if (court.id === courtId) {
-                    return {
+                    const newStatus = !currentActiveStatus;
+                    const updatedCourt = {
                         ...court,
-                        userActive: !currentActiveStatus,
-                        activeUsers: currentActiveStatus ? court.activeUsers - 1 : court.activeUsers + 1,
+                        userActive: newStatus,
+                        activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
                     };
+    
+                    // Update local storage
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    storedActiveUsers[courtId] = newStatus;
+                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
+    
+                    return updatedCourt;
                 }
                 return court;
             });
             setCourts(updatedCourts);
+    
+            // Update totalActiveUsers count
+            const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+            setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
+    
 
     return (
         <div className="play-now-container">
@@ -100,13 +125,9 @@ const PlayNow = () => {
                     ))}
                 </ul>
             </div>
+            <div>Total Active Users: {totalActiveUsers}</div> {/* Display totalActiveUsers */}
         </div>
     );
 };
 
 export default PlayNow;
-
-
-
-
-
