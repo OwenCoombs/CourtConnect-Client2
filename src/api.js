@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const baseUrl = "https://courtconnect-server.fly.dev"
+export const baseUrl = "https://courtconnect-server.fly.dev"
+// export const baseUrl = 'http://127.0.0.1:8000'
 
 export const getToken = async ({ setAccessToken, username, password }) => {
   try {
@@ -117,7 +118,7 @@ export const getActiveUsers = async ({ auth }) => {
 };
 
 export const setActiveUser = async ({ auth, courtId, setActive }) => {
-  const url = 'https://courtconnect-server.fly.dev/set-active-user';
+  const url = `${baseUrl}/set-active-user`;
   const data = {
       court_id: courtId,
       active: setActive  // Ensure the active status is sent
