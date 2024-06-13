@@ -82,7 +82,12 @@ const PlayNow = () => {
                 return updatedCourts;
             });
         } catch (error) {
-            console.error('Failed to update user status at court:', error);
+            if (error.response && error.response.status === 400 && error.response.data && error.response.data.error === 'User is already active at this court.') {
+                console.log('User is already active at this court.');
+                // Handle the scenario where the user is already active at this court
+            } else {
+                console.error('Failed to update user status at court:', error);
+            }
         }
     };
     
