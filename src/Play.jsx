@@ -88,6 +88,8 @@ const PlayNow = () => {
     
     
     
+    
+    
     return (
         <div className="play-now-container">
             <div className="search-container">
