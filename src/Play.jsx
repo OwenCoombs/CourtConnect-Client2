@@ -8,27 +8,37 @@ const PlayNow = () => {
     const [courts, setCourts] = useState([]);
     const [totalActiveUsers, setTotalActiveUsers] = useState(0);
 
-    // Function to fetch courts data
+    useEffect(() => {
+        console.log('Auth context:', auth);  // Debug statement
+        if (!auth || !auth.accessToken) {
+            console.error('No access token provided');
+            return;
+        }
+        fetchCourts();
+        const intervalId = setInterval(fetchCourts, 10000);
+        return () => clearInterval(intervalId);
+    }, [auth]);
+
     const fetchCourts = async () => {
         if (!auth || !auth.accessToken) {
             console.error('No access token provided');
             return;
         }
-
         try {
             const response = await getCourts({ auth });
             if (response && Array.isArray(response)) {
-                // Update courts data with active users information
-                const courtsWithData = response.map(court => ({
-                    ...court,
-                    userActive: court.active_users.some(user => user.id === auth.userId),
-                    activeUsers: court.active_users.length,
-                }));
-
+                const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                const courtsWithData = response.map(court => {
+                    const userActive = !!storedActiveUsers[court.id];
+                    const activeUsers = userActive ? (court.active_users.length || 0) + 1 : (court.active_users.length || 0);
+                    return {
+                        ...court,
+                        userActive,
+                        activeUsers,
+                    };
+                });
                 setCourts(courtsWithData);
-
-                // Calculate the total active users
-                const initialActiveUsers = courtsWithData.reduce((count, court) => count + court.activeUsers, 0);
+                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(initialActiveUsers);
             } else {
                 console.error('No data received for courts');
@@ -37,13 +47,6 @@ const PlayNow = () => {
             console.error('Failed to fetch courts:', error);
         }
     };
-
-    useEffect(() => {
-        fetchCourts();
-        const intervalId = setInterval(fetchCourts, 10000); // Poll every 10 seconds
-
-        return () => clearInterval(intervalId); // Cleanup interval on component unmount
-    }, [auth]);
 
     const handleInputChange = (event) => {
         setQuery(event.target.value);
@@ -54,29 +57,28 @@ const PlayNow = () => {
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        const payload = { court_id: courtId, active: !currentActiveStatus };
+        console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus); // Debug statement
+        const payload = { auth, courtId, active: !currentActiveStatus };
 
         try {
-            await setActiveUser(payload, { auth });
-
-            // Update the courts data with new active status
-            let updatedCourts = courts.map(court => {
+            await setActiveUser(payload);
+            const updatedCourts = courts.map(court => {
                 if (court.id === courtId) {
                     const newStatus = !currentActiveStatus;
                     const updatedCourt = {
                         ...court,
                         userActive: newStatus,
-                        activeUsers: newStatus ? court.activeUsers + 1 : Math.max(court.activeUsers - 1, 0),
+                        activeUsers: newStatus ? (court.active_users.length || 0) + 1 : Math.max((court.active_users.length || 0) - 1, 0),
                     };
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    storedActiveUsers[courtId] = newStatus;
+                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
                     return updatedCourt;
                 }
                 return court;
             });
-
             setCourts(updatedCourts);
-
-            // Update the total active users count
-            const updatedActiveUsers = updatedCourts.reduce((count, court) => count + court.activeUsers, 0);
+            const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
             setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             if (error.response && error.response.data.error === "User is already active at this court.") {
