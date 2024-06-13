@@ -28,10 +28,9 @@ const PlayNow = () => {
                     };
                 });
 
-                setCourts(courtsWithData, () => {
-                    const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                    setTotalActiveUsers(initialActiveUsers);
-                });
+                setCourts(courtsWithData);
+                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                setTotalActiveUsers(initialActiveUsers);
             } else {
                 console.error('No data received for courts');
             }
