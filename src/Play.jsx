@@ -60,34 +60,35 @@ const PlayNow = () => {
     
         try {
             await setActiveUser(payload);
-            setCourts(prevCourts => {
-                return prevCourts.map(court => {
-                    if (court.id === courtId) {
-                        const newStatus = !currentActiveStatus; // Toggle the user active status only if not already active
-                        const updatedCourt = {
-                            ...court,
-                            userActive: newStatus,
-                            activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
-                        };
+            const updatedCourts = courts.map(court => {
+                if (court.id === courtId) {
+                    const newStatus = !currentActiveStatus; // Toggle the user active status only if not already active
+                    const updatedCourt = {
+                        ...court,
+                        userActive: newStatus,
+                        activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
+                    };
     
-                        const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                        storedActiveUsers[courtId] = newStatus;
-                        localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    storedActiveUsers[courtId] = newStatus;
+                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
     
-                        return updatedCourt;
-                    }
-                    return court;
-                });
+                    return updatedCourt;
+                }
+                return court;
             });
     
-            setTotalActiveUsers(prevTotalActiveUsers => {
-                const updatedActiveUsers = prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                return updatedActiveUsers;
-            });
+            // Calculate updated total active users from the updated courts array
+            const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+    
+            // Update both courts and totalActiveUsers state
+            setCourts(updatedCourts);
+            setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
+    
     
     
     
