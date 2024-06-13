@@ -18,15 +18,18 @@ const PlayNow = () => {
             const response = await getCourts({ auth });
             if (response && Array.isArray(response)) {
                 const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                const updatedCourts = response.map(court => {
+                const courtsWithData = response.map(court => {
                     const userActive = !!storedActiveUsers[court.id];
-                    court.userActive = userActive;
-                    court.activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
-                    return court;
+                    const activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
+                    return {
+                        ...court,
+                        userActive,
+                        activeUsers,
+                    };
                 });
-                setCourts(updatedCourts);
+                setCourts(courtsWithData);
 
-                const initialActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(initialActiveUsers);
             } else {
                 console.error('No data received for courts');
@@ -54,26 +57,36 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         const payload = { auth, courtId, setActive: !currentActiveStatus };
-    
+
         try {
             await setActiveUser(payload);
-            setCourts(prevCourts => prevCourts.map(court => {
-                if (court.id === courtId) {
-                    const newStatus = !currentActiveStatus;
-                    court.userActive = newStatus;
-                    court.activeUsers = newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0);
+            setCourts(prevCourts => {
+                return prevCourts.map(court => {
+                    if (court.id === courtId) {
+                        const newStatus = !currentActiveStatus; // Toggle the user active status only if not already active
+                        const updatedCourt = {
+                            ...court,
+                            userActive: newStatus,
+                            activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
+                        };
 
-                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                    storedActiveUsers[courtId] = newStatus;
-                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
-                }
-                return court;
-            }));
+                        const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                        storedActiveUsers[courtId] = newStatus;
+                        localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
+
+                        return updatedCourt;
+                    }
+                    return court;
+                });
+            });
+
+            const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+            setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
-    
+
     return (
         <div className="play-now-container">
             <div className="search-container">
@@ -116,6 +129,4 @@ const PlayNow = () => {
     );
 };
 
-
-export default PlayNow
-
+export default PlayNow;
