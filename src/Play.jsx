@@ -1,7 +1,3 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { getCourts, setActiveUser } from './api';
-import { Context } from './context';
-
 const PlayNow = () => {
     const { auth } = useContext(Context);
     const [query, setQuery] = useState('');
@@ -18,18 +14,15 @@ const PlayNow = () => {
             const response = await getCourts({ auth });
             if (response && Array.isArray(response)) {
                 const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                const courtsWithData = response.map(court => {
+                const updatedCourts = response.map(court => {
                     const userActive = !!storedActiveUsers[court.id];
-                    const activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
-                    return {
-                        ...court,
-                        userActive,
-                        activeUsers,
-                    };
+                    court.userActive = userActive;
+                    court.activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
+                    return court;
                 });
-                setCourts(courtsWithData);
+                setCourts(updatedCourts);
 
-                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                const initialActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(initialActiveUsers);
             } else {
                 console.error('No data received for courts');
@@ -60,42 +53,23 @@ const PlayNow = () => {
     
         try {
             await setActiveUser(payload);
-            setCourts(prevCourts => {
-                return prevCourts.map(court => {
-                    if (court.id === courtId) {
-                        const newStatus = !currentActiveStatus;
-                        const updatedCourt = {
-                            ...court,
-                            userActive: newStatus,
-                            activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
-                        };
-    
-                        const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                        storedActiveUsers[courtId] = newStatus;
-                        localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
-    
-                        return updatedCourt;
-                    }
-                    return court;
-                });
-            });
-    
-            // Calculate updated total active users from the updated courts array (using prevCourts)
-            const updatedActiveUsers = prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-    
-            // Update the totalActiveUsers state
-            setTotalActiveUsers(updatedActiveUsers);
+            setCourts(prevCourts => prevCourts.map(court => {
+                if (court.id === courtId) {
+                    const newStatus = !currentActiveStatus;
+                    court.userActive = newStatus;
+                    court.activeUsers = newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0);
+
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    storedActiveUsers[courtId] = newStatus;
+                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
+                }
+                return court;
+            }));
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
     
-    
-    
-    
-    
-    
-
     return (
         <div className="play-now-container">
             <div className="search-container">
@@ -138,6 +112,6 @@ const PlayNow = () => {
     );
 };
 
-export default PlayNow;
 
+export default PlayNow
 
