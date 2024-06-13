@@ -13,21 +13,20 @@ const PlayNow = () => {
             console.error('No access token provided');
             return;
         }
-
+    
         try {
             const response = await getCourts({ auth });
             if (response && Array.isArray(response)) {
-                const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
                 const courtsWithData = response.map(court => {
-                    const userActive = !!storedActiveUsers[court.id];
-                    const activeUsers = userActive ? (court.activeUsers || 0) + 1 : (court.activeUsers || 0);
+                    const userActive = court.activeUsers.includes(auth.userId); // Check if the current user is in the activeUsers array
+                    const activeUsers = court.activeUsers.length;
                     return {
                         ...court,
                         userActive,
                         activeUsers,
                     };
                 });
-
+    
                 setCourts(courtsWithData);
                 const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(initialActiveUsers);
@@ -38,7 +37,6 @@ const PlayNow = () => {
             console.error('Failed to fetch courts:', error);
         }
     };
-
     useEffect(() => {
         fetchCourts();
 
