@@ -62,7 +62,7 @@ const PlayNow = () => {
             await setActiveUser(payload);
             const updatedCourts = courts.map(court => {
                 if (court.id === courtId) {
-                    const newStatus = !court.userActive; // Toggle the user active status
+                    const newStatus = !currentActiveStatus; // Toggle the user active status only if not already active
                     const updatedCourt = {
                         ...court,
                         userActive: newStatus,
@@ -85,6 +85,7 @@ const PlayNow = () => {
             console.error('Failed to update user status at court:', error);
         }
     };
+    
     
 
     return (
