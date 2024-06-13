@@ -27,10 +27,10 @@ const PlayNow = () => {
         try {
             const response = await getCourts({ auth });
             if (response && Array.isArray(response)) {
-                const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                const userId = auth.userId;
                 const courtsWithData = response.map(court => {
-                    const userActive = !!storedActiveUsers[court.id];
-                    const activeUsers = userActive ? (court.active_users.length || 0) + 1 : (court.active_users.length || 0);
+                    const userActive = court.active_users.some(user => user.id === userId);
+                    const activeUsers = court.active_users.length + (userActive ? 1 : 0);
                     return {
                         ...court,
                         userActive,
@@ -65,15 +65,11 @@ const PlayNow = () => {
             const updatedCourts = courts.map(court => {
                 if (court.id === courtId) {
                     const newStatus = !currentActiveStatus;
-                    const updatedCourt = {
+                    return {
                         ...court,
                         userActive: newStatus,
-                        activeUsers: newStatus ? (court.active_users.length || 0) + 1 : Math.max((court.active_users.length || 0) - 1, 0),
+                        activeUsers: newStatus ? court.active_users.length + 1 : court.active_users.length - 1,
                     };
-                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
-                    storedActiveUsers[courtId] = newStatus;
-                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
-                    return updatedCourt;
                 }
                 return court;
             });
