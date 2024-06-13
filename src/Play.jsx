@@ -60,36 +60,44 @@ const PlayNow = () => {
     
         try {
             await setActiveUser(payload);
-            setCourts(prevCourts => {
-                const updatedCourts = prevCourts.map(court => {
-                    if (court.id === courtId) {
-                        const newStatus = !currentActiveStatus;
-                        return {
-                            ...court,
-                            userActive: newStatus,
-                            activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
-                        };
-                    }
-                    return court;
-                });
+            let updatedCourts = courts.map(court => {
+                if (court.id === courtId) {
+                    const newStatus = !currentActiveStatus;
+                    const updatedCourt = {
+                        ...court,
+                        userActive: newStatus,
+                        activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
+                    };
     
-                // Calculate updated total active users from the updated courts array
-                const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    // Update localStorage
+                    const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
+                    storedActiveUsers[courtId] = newStatus;
+                    localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
     
-                // Update the totalActiveUsers state
-                setTotalActiveUsers(updatedActiveUsers);
-    
-                return updatedCourts;
+                    return updatedCourt;
+                }
+                return court;
             });
+    
+            // Update the courts state
+            setCourts(updatedCourts);
+    
+            // Calculate updated total active users from the updated courts array
+            const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+    
+            // Update the totalActiveUsers state
+            setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
-            if (error.response && error.response.status === 400 && error.response.data && error.response.data.error === 'User is already active at this court.') {
-                console.log('User is already active at this court.');
-                // Handle the scenario where the user is already active at this court
+            if (error.response && error.response.data.error === "User is already active at this court.") {
+                // User is already active at the court, no need to update UI
+                console.error('User is already active at this court:', error);
             } else {
+                // Other errors, log and handle as needed
                 console.error('Failed to update user status at court:', error);
             }
         }
     };
+    
     
     
     
