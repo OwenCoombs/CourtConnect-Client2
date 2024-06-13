@@ -1,3 +1,7 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { getCourts, setActiveUser } from './api';
+import { Context } from './context';
+
 const PlayNow = () => {
     const { auth } = useContext(Context);
     const [query, setQuery] = useState('');
