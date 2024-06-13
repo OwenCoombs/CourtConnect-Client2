@@ -63,7 +63,7 @@ const PlayNow = () => {
             setCourts(prevCourts => {
                 return prevCourts.map(court => {
                     if (court.id === courtId) {
-                        const newStatus = !currentActiveStatus; // Toggle the user active status only if not already active
+                        const newStatus = !currentActiveStatus;
                         const updatedCourt = {
                             ...court,
                             userActive: newStatus,
@@ -80,11 +80,8 @@ const PlayNow = () => {
                 });
             });
     
-            // Calculate updated total active users from the updated courts array
-            const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-    
             // Update the totalActiveUsers state
-            setTotalActiveUsers(updatedActiveUsers);
+            setTotalActiveUsers(prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0));
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
