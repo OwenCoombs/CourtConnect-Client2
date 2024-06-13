@@ -1,19 +1,19 @@
-// ProfilePage.js
 import React, { useContext, useState } from 'react';
 import { Context } from './context';
 import UploadImage from './uploadImage';
 import Images from './Images';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState(false); // State to track editing mode
+  const [isEditing, setIsEditing] = useState(false);
   const { liveProfile } = useContext(Context);
+  const navigate = useNavigate();
 
   const handleEditClick = () => {
-    setIsEditing(true); // Set editing mode to true when edit button is clicked
+    setIsEditing(true);
   };
 
   const handleSaveClick = () => {
-    // Save changes and exit editing mode
     setIsEditing(false);
   };
 
@@ -33,6 +33,16 @@ export default function ProfilePage() {
     }));
   };
 
+  const logout = () => {
+    // Clear local storage and session storage
+    localStorage.clear();
+    sessionStorage.clear();
+    // Redirect to the login page
+    navigate('/');
+    // Reload the page
+    window.location.reload();
+  };
+
   return (
     <section className="personal-profile">
       <div className="profile-container">
@@ -42,7 +52,10 @@ export default function ProfilePage() {
             {isEditing ? (
               <button onClick={handleSaveClick}>Save</button>
             ) : (
-              <button onClick={handleEditClick}>Edit Profile</button>
+              <>
+                <button onClick={handleEditClick}>Edit Profile</button>
+                <button onClick={logout}>Logout</button>
+              </>
             )}
           </div>
         </div>

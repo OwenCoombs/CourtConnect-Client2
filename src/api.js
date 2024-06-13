@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const baseUrl = "https://courtconnect-server.fly.dev"
-// export const baseUrl = 'http://127.0.0.1:8000'
+// export const baseUrl = "https://courtconnect-server.fly.dev"
+export const baseUrl = 'http://127.0.0.1:8000'
 
 export const getToken = async ({ setAccessToken, username, password }) => {
   try {
@@ -138,5 +138,3 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
       throw error;
   }
 };
-
-

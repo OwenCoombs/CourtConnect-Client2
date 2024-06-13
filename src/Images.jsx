@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "./context";
-import { getImages } from "./api";
+import { baseUrl, getImages } from "./api";
 
 const Images = () => {
     const [images, setImages] = useState([]);
@@ -28,7 +28,7 @@ const Images = () => {
           {images && images.map(image => (
             <div key={image.id} className="image-post">
               <img 
-                src={`http://127.0.0.1:8000${image.image}`}  // Remove the extra slash before image.image
+                src={`${baseUrl}/${image.image}`}  // Remove the extra slash before image.image
                 alt={image.id}
                 className="image-post-img"
               />
