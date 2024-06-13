@@ -57,34 +57,35 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         const payload = { auth, courtId, setActive: !currentActiveStatus };
-
+    
         try {
             await setActiveUser(payload);
             const updatedCourts = courts.map(court => {
                 if (court.id === courtId) {
-                    const newStatus = !currentActiveStatus;
+                    const newStatus = !court.userActive; // Toggle the user active status
                     const updatedCourt = {
                         ...court,
                         userActive: newStatus,
                         activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
                     };
-
+    
                     const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
                     storedActiveUsers[courtId] = newStatus;
                     localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
-
+    
                     return updatedCourt;
                 }
                 return court;
             });
             setCourts(updatedCourts);
-
+    
             const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
             setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
+    
 
     return (
         <div className="play-now-container">
@@ -129,3 +130,5 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
+
