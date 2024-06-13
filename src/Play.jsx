@@ -69,6 +69,7 @@ const PlayNow = () => {
                         activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
                     };
     
+                    // Update localStorage
                     const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
                     storedActiveUsers[courtId] = newStatus;
                     localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
@@ -135,3 +136,4 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
