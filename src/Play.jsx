@@ -27,10 +27,11 @@ const PlayNow = () => {
                         activeUsers,
                     };
                 });
-                setCourts(courtsWithData);
 
-                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(initialActiveUsers);
+                setCourts(courtsWithData, () => {
+                    const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    setTotalActiveUsers(initialActiveUsers);
+                });
             } else {
                 console.error('No data received for courts');
             }
@@ -57,7 +58,7 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         const payload = { auth, courtId, setActive: !currentActiveStatus };
-
+    
         try {
             await setActiveUser(payload);
             setCourts(prevCourts => {
@@ -69,24 +70,27 @@ const PlayNow = () => {
                             userActive: newStatus,
                             activeUsers: newStatus ? (court.activeUsers || 0) + 1 : Math.max((court.activeUsers || 0) - 1, 0),
                         };
-
+    
                         const storedActiveUsers = JSON.parse(localStorage.getItem('activeUsers')) || {};
                         storedActiveUsers[courtId] = newStatus;
                         localStorage.setItem('activeUsers', JSON.stringify(storedActiveUsers));
-
+    
                         return updatedCourt;
                     }
                     return court;
                 });
             });
-
+    
+            // Calculate updated total active users from the updated courts array
             const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+    
+            // Update the totalActiveUsers state
             setTotalActiveUsers(updatedActiveUsers);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
         }
     };
-
+    
     return (
         <div className="play-now-container">
             <div className="search-container">
