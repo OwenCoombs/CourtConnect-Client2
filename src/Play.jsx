@@ -62,19 +62,19 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus);
-    
+
         const newActiveStatus = !currentActiveStatus; // Determine new active status based on current status
-    
+
         try {
             setIsPolling(false); // Temporarily stop polling to avoid conflicts during update
-    
+
             // Track local change
             localChangesRef.current[courtId] = newActiveStatus;
-    
+
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus }); // Call API to set active user
-    
+
             console.log('API response:', response);
-    
+
             if (response.error) {
                 console.error(response.error); // Log error if API request fails
             } else {
@@ -92,14 +92,14 @@ const PlayNow = () => {
                     }
                     return court;
                 });
-    
+
                 console.log('Updated courts:', updatedCourts);
-    
+
                 setCourts(updatedCourts); // Update courts state with updated data
-    
+
                 const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(updatedActiveUsers); // Update total active users count
-    
+
                 setIsPolling(true); // Resume polling
             }
         } catch (error) {
@@ -107,7 +107,6 @@ const PlayNow = () => {
             setIsPolling(true); // Ensure polling resumes on error
         }
     };
-    
 
     return (
         <div className="play-now-container">
@@ -140,17 +139,18 @@ const PlayNow = () => {
                                     {court.userActive ? 'Leave Game' : 'Play Here!'}
                                 </button>
                                 <div className="active-users">
-                                    {court.activeUsers} {court.activeUsers === 1 ? 'active user' : 'active users'}
+                                    {Math.max(court.activeUsers, 0)} {court.activeUsers === 1 ? 'active user' : 'active users'}
                                 </div>
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-            <div>Total Active Users: {totalActiveUsers}</div>
+            <div>Total Active Users: {Math.max(totalActiveUsers, 0)}</div>
         </div>
     );
 };
 
 export default PlayNow;
+
 
