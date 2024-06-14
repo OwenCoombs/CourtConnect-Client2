@@ -82,8 +82,8 @@ const PlayNow = () => {
                 const updatedCourts = courts.map(court => {
                     if (court.id === courtId) {
                         const updatedActiveUsers = newActiveStatus
-                            ? court.activeUsers + 1
-                            : Math.max(court.activeUsers - 1, 0); // Ensure activeUsers doesn't go below zero
+                        ? Math.max(court.activeUsers + 1, 0) // Increment activeUsers by 1
+                        : Math.max(court.activeUsers - 1, 0); // Decrement activeUsers by 1, ensuring it doesn't go below 0
                         return {
                             ...court,
                             userActive: newActiveStatus,
