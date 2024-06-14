@@ -1,87 +1,102 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { getCourts, setActiveUser } from './api';
-import { Context } from './context';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { getCourts, setActiveUser } from './api'; // Importing API functions for fetching courts and setting active user
+import { Context } from './context'; // Importing context for authentication
 
 const PlayNow = () => {
-    const { auth } = useContext(Context);
-    const [query, setQuery] = useState('');
-    const [courts, setCourts] = useState([]);
-    const [totalActiveUsers, setTotalActiveUsers] = useState(0);
+    const { auth } = useContext(Context); // Accessing authentication context
+    const [query, setQuery] = useState(''); // State to store search query
+    const [courts, setCourts] = useState([]); // State to store courts data
+    const [totalActiveUsers, setTotalActiveUsers] = useState(0); // State to store total active users
+    const [isPolling, setIsPolling] = useState(true); // State to control polling for court updates
 
     useEffect(() => {
-        console.log('Auth context:', auth);  // Debug statement
-        if (!auth || !auth.accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-        fetchCourts();
-        const intervalId = setInterval(fetchCourts, 10000);
-        return () => clearInterval(intervalId);
-    }, [auth]);
-
-    const fetchCourts = async () => {
-        if (!auth || !auth.accessToken) {
-            console.error('No access token provided');
-            return;
-        }
-        try {
-            const response = await getCourts({ auth });
-            if (response && Array.isArray(response)) {
-                const userId = auth.userId;
-                const courtsWithData = response.map(court => {
-                    const userActive = court.active_users.some(user => user.id === userId);
-                    const activeUsers = court.active_users.length + (userActive ? 1 : 0);
-                    return {
-                        ...court,
-                        userActive,
-                        activeUsers,
-                    };
-                });
-                setCourts(courtsWithData);
-                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(initialActiveUsers);
-            } else {
-                console.error('No data received for courts');
+        // Effect to fetch courts and start polling when component mounts or when isPolling changes
+        const fetchCourts = async () => {
+            if (!auth || !auth.accessToken) {
+                console.error('No access token provided');
+                return;
             }
-        } catch (error) {
-            console.error('Failed to fetch courts:', error);
-        }
-    };
+            try {
+                const response = await getCourts({ auth }); // Fetch courts data
+                if (response && Array.isArray(response)) {
+                    const userId = auth.userId;
+                    const courtsWithData = response.map(court => {
+                        const userActive = court.active_users.some(user => user.id === userId); // Check if current user is active in this court
+                        const activeUsers = court.active_users.length; // Count total active users in this court
+                        return {
+                            ...court,
+                            userActive,
+                            activeUsers,
+                        };
+                    });
+                    setCourts(courtsWithData); // Update courts state with fetched data
+                    const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    setTotalActiveUsers(initialActiveUsers); // Calculate and update total active users
+                } else {
+                    console.error('No data received for courts');
+                }
+            } catch (error) {
+                console.error('Failed to fetch courts:', error);
+            }
+        };
+
+        fetchCourts(); // Initial fetch when component mounts
+
+        const intervalId = setInterval(() => {
+            // Polling function to fetch courts data at regular intervals
+            if (isPolling) {
+                fetchCourts();
+            }
+        }, 10000); // Polling interval set to 10 seconds
+
+        return () => clearInterval(intervalId); // Cleanup function to clear interval when component unmounts or when isPolling changes
+    }, [auth, isPolling]); // Dependencies: auth and isPolling state
 
     const handleInputChange = (event) => {
+        // Event handler to update search query state
         setQuery(event.target.value);
     };
 
     const handleSearch = () => {
+        // Placeholder function for search functionality
         console.log('Searching for:', query);
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus); // Debug statement
-        const payload = { auth, courtId, active: !currentActiveStatus };
+        // Function to handle setting/unsetting active status for a court
+        console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus);
+
+        const newActiveStatus = !currentActiveStatus; // Determine new active status based on current status
 
         try {
-            await setActiveUser(payload);
-            const updatedCourts = courts.map(court => {
-                if (court.id === courtId) {
-                    const newStatus = !currentActiveStatus;
-                    return {
-                        ...court,
-                        userActive: newStatus,
-                        activeUsers: newStatus ? court.active_users.length + 1 : court.active_users.length - 1,
-                    };
-                }
-                return court;
-            });
-            setCourts(updatedCourts);
-            const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-            setTotalActiveUsers(updatedActiveUsers);
-        } catch (error) {
-            if (error.response && error.response.data.error === "User is already active at this court.") {
-                console.error('User is already active at this court:', error);
+            setIsPolling(false); // Temporarily stop polling to avoid conflicts during update
+
+            const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus }); // Call API to set active user
+
+            if (response.error) {
+                console.error(response.error); // Log error if API request fails
             } else {
-                console.error('Failed to update user status at court:', error);
+                // Update courts state with new active status
+                const updatedCourts = courts.map(court => {
+                    if (court.id === courtId) {
+                        return {
+                            ...court,
+                            userActive: newActiveStatus,
+                            activeUsers: newActiveStatus ? court.activeUsers + 1 : Math.max(court.activeUsers - 1, 0),
+                        };
+                    }
+                    return court;
+                });
+
+                setCourts(updatedCourts); // Update courts state with updated data
+
+                const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                setTotalActiveUsers(updatedActiveUsers); // Update total active users count
             }
+        } catch (error) {
+            console.error('Failed to update user status at court:', error); // Log error if setting active user fails
+        } finally {
+            setIsPolling(true); // Resume polling after state update is complete
         }
     };
 
@@ -128,3 +143,7 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
+
+
+

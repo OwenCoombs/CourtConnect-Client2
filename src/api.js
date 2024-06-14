@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const baseUrl = "https://courtconnect-server.fly.dev"
-// export const baseUrl = 'http://127.0.0.1:8000'
+// export const baseUrl = "https://courtconnect-server.fly.dev"
+export const baseUrl = 'http://127.0.0.1:8000'
 
 export const getToken = async ({ setAccessToken, username, password }) => {
   try {
@@ -121,7 +121,7 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
   const url = `${baseUrl}/set-active-user`;
   const data = {
       court_id: courtId,
-      active: setActive  // Ensure the active status is sent
+      active: setActive
   };
   console.log('Request data:', data);
 
@@ -134,7 +134,12 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
       console.log('Response from setActiveUser:', response.data);
       return response.data;
   } catch (error) {
-      console.error('Error from setActiveUser:', error.response ? error.response.data : error.message);
-      throw error;
+      if (error.response) {
+          console.error('Error from setActiveUser:', error.response.data);
+          return error.response.data; // Return error data to handle it in the frontend
+      } else {
+          console.error('Unexpected error:', error);
+          throw error;
+      }
   }
 };
