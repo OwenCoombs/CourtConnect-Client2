@@ -6,6 +6,7 @@ const PlayNow = () => {
     const { auth } = useContext(Context); // Accessing authentication context
     const [query, setQuery] = useState(''); // State to store search query
     const [courts, setCourts] = useState([]); // State to store courts data
+    const [filteredCourts, setFilteredCourts] = useState([]); // State to store filtered courts
     const [totalActiveUsers, setTotalActiveUsers] = useState(0); // State to store total active users
     const [isPolling, setIsPolling] = useState(true); // State to control polling for court updates
     const localChangesRef = useRef({}); // Ref to track local changes
@@ -33,6 +34,7 @@ const PlayNow = () => {
                         };
                     });
                     setCourts(courtsWithData); // Update courts state with fetched data
+                    setFilteredCourts(courtsWithData); // Initially set filtered courts to all courts
                     const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                     setTotalActiveUsers(initialActiveUsers); // Calculate and update total active users
                 } else {
@@ -46,7 +48,7 @@ const PlayNow = () => {
         if (isPolling) {
             const intervalId = setInterval(() => {
                 fetchCourts();
-            }, 4000); // Polling interval set to 10 seconds
+            }, 4000); // Polling interval set to 4 seconds
 
             return () => clearInterval(intervalId); // Cleanup function to clear interval when component unmounts or when isPolling changes
         }
@@ -57,7 +59,13 @@ const PlayNow = () => {
     };
 
     const handleSearch = () => {
-        console.log('Searching for:', query);
+        const lowerCaseQuery = query.toLowerCase();
+        const filtered = courts.filter(court =>
+            court.name.toLowerCase().includes(lowerCaseQuery) ||
+            court.location.toLowerCase().includes(lowerCaseQuery) ||
+            court.amenities.toLowerCase().includes(lowerCaseQuery)
+        );
+        setFilteredCourts(filtered);
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
@@ -97,6 +105,23 @@ const PlayNow = () => {
 
                 setCourts(updatedCourts); // Update courts state with updated data
 
+                // Update filtered courts as well to reflect changes
+                const updatedFilteredCourts = filteredCourts.map(court => {
+                    if (court.id === courtId) {
+                        const updatedActiveUsers = newActiveStatus
+                        ? Math.max(court.activeUsers + 1, 0)
+                        : Math.max(court.activeUsers - 1, 0);
+                        return {
+                            ...court,
+                            userActive: newActiveStatus,
+                            activeUsers: updatedActiveUsers,
+                        };
+                    }
+                    return court;
+                });
+
+                setFilteredCourts(updatedFilteredCourts);
+
                 const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(updatedActiveUsers); // Update total active users count
 
@@ -125,7 +150,7 @@ const PlayNow = () => {
             <div className="courts-section">
                 <h4>Popular Courts:</h4>
                 <ul className="courts-container">
-                    {courts.map(court => (
+                    {filteredCourts.map(court => (
                         <li key={court.id} className="court-item">
                             <div className="court-info">
                                 <div className="court-name">{court.name}</div>
@@ -152,5 +177,6 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
 
 

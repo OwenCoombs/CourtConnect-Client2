@@ -1,9 +1,11 @@
+/* ProfilePage.css */
+
 :root {
-  --primary-color: #34495E;
-  --secondary-color: #2E86C1; /* Royal Blue */
-  --accent-color: #F39C12;
-  --background-color: #ECF0F1;
-  --text-color: #2C3E50;
+  --primary-color: #B22222; /* Deep Red */
+  --secondary-color: #FFD700; /* Gold */
+  --accent-color: #000000; /* Black */
+  --background-color: #FFFFFF; /* White */
+  --text-color: #2C3E50; /* Dark Text Color */
 }
 
 body {
@@ -24,12 +26,12 @@ body {
 }
 
 .App-main {
-  padding: 40px 20px; /* Added more padding to separate the content from the header */
+  padding: 40px 20px;
 }
 
 .cta-button {
   background-color: var(--secondary-color);
-  color: white;
+  color: var(--accent-color);
   border: none;
   padding: 15px 30px;
   font-size: 16px;
@@ -39,7 +41,8 @@ body {
 }
 
 .cta-button:hover {
-  background-color: var(--accent-color);
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .App-footer {
@@ -69,7 +72,7 @@ body {
 }
 
 .nav-link:hover {
-  color: var(--accent-color);
+  color: var(--secondary-color);
 }
 
 .container {
@@ -80,7 +83,7 @@ body {
 }
 
 .login-container {
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
   padding: 40px;
   border-radius: 10px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -113,8 +116,8 @@ body {
 }
 
 .btn-submit {
-  background-color: #007bff;
-  color: #fff;
+  background-color: var(--primary-color);
+  color: white;
   padding: 10px 20px;
   font-size: 16px;
   border: none;
@@ -124,67 +127,8 @@ body {
 }
 
 .btn-submit:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.form-container {
-  background-color: #f9f9f9;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
-}
-
-.form-heading {
-  margin-bottom: 20px;
-  font-size: 24px;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-label {
-  display: block;
-  font-size: 18px;
-  margin-bottom: 5px;
-}
-
-.form-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.btn-submit {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-submit:hover {
-  background-color: #0056b3;
-}
-
-
-
-
 
 .profile-container {
   display: flex;
@@ -215,7 +159,7 @@ body {
 .profile-avatar button {
   background-color: transparent;
   border: none;
-  color: #007bff;
+  color: var(--primary-color);
   cursor: pointer;
 }
 
@@ -241,7 +185,7 @@ body {
 }
 
 .social-icons a {
-  color: #007bff;
+  color: var(--primary-color);
   text-decoration: none;
   margin-right: 10px;
 }
@@ -282,8 +226,6 @@ body {
   }
 }
 
-
-
 .search-container {
   display: flex;
   align-items: center;
@@ -301,8 +243,8 @@ body {
 }
 
 .search-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(178, 34, 34, 0.5);
 }
 
 .search-button {
@@ -318,7 +260,7 @@ body {
 }
 
 .search-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 
 .play-now-container {
@@ -327,43 +269,6 @@ body {
   padding: 20px;
 }
 
-/* Container styling */
-.play-now-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Search container styling */
-.search-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-
-.search-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.search-button:hover {
-  background-color: #0056b3;
-}
-
-/* Courts section styling */
 .courts-section {
   text-align: center;
   margin-top: 30px;
@@ -433,9 +338,281 @@ body {
   background-color: #c82333;
 }
 
-/* Active users styling */
 .active-users {
   margin-top: 10px;
   font-size: 0.9em;
   color: #555;
+}
+
+
+/* Profile Page Container */
+.personal-profile {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Profile Container */
+.profile-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* Profile Avatar Section */
+.profile-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Upload Image Button */
+.upload-btn {
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.upload-btn:hover {
+  background-color: #0e71a9;
+}
+
+/* Profile Details Section */
+.profile-details {
+  flex: 1;
+  margin-left: 20px;
+}
+
+/* Information Section */
+.info-section {
+  margin-bottom: 20px;
+}
+
+.info-header {
+  font-size: 18px;
+  color: #1da1f2;
+}
+
+.twitter-hr {
+  border-top: 1px solid #e1e8ed;
+}
+
+/* Edit and Save Buttons */
+.twitter-btn {
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.twitter-btn:hover {
+  background-color: #0e71a9;
+}
+
+.save-btn {
+  background-color: #17bf63;
+}
+
+.edit-btn {
+  background-color: #1da1f2;
+}
+
+.logout-btn {
+  background-color: #ffad1f;
+}
+
+/* Input Fields */
+.twitter-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccd6dd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Social Media Section (Your Posts) */
+.social-media {
+  margin-bottom: 20px;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* Individual Post */
+.twitter-post {
+  border: 1px solid #ccd6dd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f5f8fa;
+}
+
+.twitter-post-title {
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.twitter-post-description {
+  font-size: 14px;
+  color: #333;
+}
+
+.twitter-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.twitter-trash-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .profile-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-details {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+}
+
+
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #ccd6dd;
+  border-radius: 8px;
+  background-color: #f5f8fa;
+  text-align: center;
+}
+
+.upload-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  font-size: 32px;
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.upload-button:hover {
+  background-color: #0e71a9;
+}
+
+.upload-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #1da1f2;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.input-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccd6dd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.file-input {
+  display: none;
+}
+
+.submit-button {
+  background-color: #1da1f2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.submit-button:hover {
+  background-color: #0e71a9;
+}
+
+
+/* LoadingScreen.css */
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 1s ease;
+  z-index: 9999; /* Ensure it's on top */
+}
+
+.loading-screen.loaded {
+  opacity: 0;
+  pointer-events: none; /* Clicks won't be registered */
+}
+
+.logo {
+  width: 200px; /* Adjust size as needed */
+  height: 200px;
+  background-image: url('path_to_your_logo.png');
+  background-size: contain;
+  filter: blur(10px); /* Initial blur effect */
+  animation: fadeIn 2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    filter: blur(10px);
+    opacity: 0;
+  }
+  100% {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+#Logoscreen {
+  width: 200px;
 }

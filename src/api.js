@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const baseUrl = "https://courtconnect-server.fly.dev"
-// export const baseUrl = 'http://127.0.0.1:8000'
+// export const baseUrl = "https://courtconnect-server.fly.dev"
+export const baseUrl = 'http://127.0.0.1:8000'
 
 export const getToken = async ({ setAccessToken, username, password }) => {
   try {
@@ -141,5 +141,36 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
           console.error('Unexpected error:', error);
           throw error;
       }
+  }
+};
+
+
+export const deletePost = async (imageId, {auth}) => {
+  
+  try {
+    const response = await axios.delete(`${baseUrl}/get-images/${imageId}/delete/`, {
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`
+      }
+    })
+    console.log('Post id: ', imageId)
+    console.log('Delete post: ', response);
+  } catch (error) {
+    console.error ('Error deleting post: ', error);
+    throw error;
+  }
+}
+
+
+export const getUserPosts = async (accessToken) => {
+  try {
+    const response = await axios.get(`${baseUrl}/get-images/`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };

@@ -1,8 +1,16 @@
-import React from "react";
+// App.js
+
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingScreen from "./LoadingScreen";
 
 function App() {
-  const navigate = useNavigate(); // Move the useNavigate hook inside the component
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  const handleLoadingFinish = () => {
+    setLoading(false);
+  };
 
   const handleOnClick = () => {
     navigate('/login');
@@ -10,10 +18,11 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      {loading && <LoadingScreen onFinish={handleLoadingFinish} />}
+      <header className={`App-header ${loading ? 'loading' : ''}`}>
         <h1>CourtConnect</h1>
       </header>
-      <main className="App-main">
+      <main className={`App-main ${loading ? 'loading' : ''}`}>
         <h2>Find Your Next Pickup Game</h2>
         <p>Discover and join basketball games near you.</p>
         <button 
@@ -23,7 +32,7 @@ function App() {
           Get Started
         </button>
       </main>
-      <footer className="App-footer">
+      <footer className={`App-footer ${loading ? 'loading' : ''}`}>
         <p>&copy; 2024 CourtConnect. All rights reserved.</p>
       </footer>
     </div>
@@ -31,4 +40,5 @@ function App() {
 }
 
 export default App;
+
 
