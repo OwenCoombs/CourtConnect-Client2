@@ -46,7 +46,7 @@ const PlayNow = () => {
         if (isPolling) {
             const intervalId = setInterval(() => {
                 fetchCourts();
-            }, 10000); // Polling interval set to 10 seconds
+            }, 4000); // Polling interval set to 10 seconds
 
             return () => clearInterval(intervalId); // Cleanup function to clear interval when component unmounts or when isPolling changes
         }
