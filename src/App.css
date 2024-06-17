@@ -676,3 +676,90 @@ body {
 .edit-btn {
   margin-right: 10px;
 }
+
+
+/* Header.css */
+/* Header.css */
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #B22222;
+  color: #fff;
+}
+
+.menu-icon {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.close-icon {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
+  }
+
+  .close-icon {
+    display: block; /* Show close icon on mobile */
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 175px;
+    height: 100%;
+    background-color: #B22222;
+    padding: 20px;
+    gap: 10px;
+    transition: left 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+
+  .nav-link {
+    padding: 10px 0;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .menu-icon {
+    display: none; /* Hide hamburger icon on desktop */
+  }
+
+  .close-icon {
+    display: none; /* Hide close icon on desktop */
+  }
+}

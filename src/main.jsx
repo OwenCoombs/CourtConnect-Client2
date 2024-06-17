@@ -21,6 +21,8 @@ import { ContextProvider } from './context';  // Import from context.jsx
 import ProfilePage from './profile';
 import ProtectedRoute from './protected';
 import PlayNow from './Play';
+import LiveFeed from './LiveFeed';
+
 
 function Layout() {
   return (
@@ -61,6 +63,10 @@ const router = createBrowserRouter([
           {
             path: '/playnow',
             element: <PlayNow />,
+          },
+          {
+            path: '/livefeed',
+            element: <LiveFeed />
           },
         ],
       },
