@@ -148,7 +148,7 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
 export const deletePost = async (imageId, {auth}) => {
   
   try {
-    const response = await axios.delete(`${baseUrl}/get-images/${imageId}/delete/`, {
+    const response = await axios.delete(`${baseUrl}/get-user-images/${imageId}/delete/`, {
       headers: {
         Authorization: `Bearer ${auth.accessToken}`
       }
