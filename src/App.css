@@ -616,3 +616,150 @@ body {
 #Logoscreen {
   width: 200px;
 }
+
+
+.btn-modern {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern:hover {
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+  transform: translateY(-2px);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+.save-btn {
+  margin-right: 10px;
+}
+
+.edit-btn {
+  margin-right: 10px;
+}
+
+
+.btn-modern {
+  background: var(--primary-color);
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+.save-btn {
+  margin-right: 10px;
+}
+
+.edit-btn {
+  margin-right: 10px;
+}
+
+
+/* Header.css */
+/* Header.css */
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #B22222;
+  color: #fff;
+}
+
+.menu-icon {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.close-icon {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
+  }
+
+  .close-icon {
+    display: block; /* Show close icon on mobile */
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 175px;
+    height: 100%;
+    background-color: #B22222;
+    padding: 20px;
+    gap: 10px;
+    transition: left 0.3s ease-in-out;
+    z-index: 1000;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+
+  .nav-link {
+    padding: 10px 0;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .menu-icon {
+    display: none; /* Hide hamburger icon on desktop */
+  }
+
+  .close-icon {
+    display: none; /* Hide close icon on desktop */
+  }
+}
