@@ -31,22 +31,29 @@ const Images = () => {
     <div className="images-container">
       <h1 className="text-center p-4">Your Feed</h1>
       <div className="images-grid">
-        {images && images.map(image => (
-          <div key={image.pk} className="image-post">
-            <img 
-              src={`${baseUrl}/${image.image}`}  
-              alt={image.title}
-              className="image-post-img"
-            />
-            <h4 className="image-post-title">{image.title}</h4>
-            <p className="text-center">{image.description}</p>
-            <img id='trash' src={Trash} onClick={() => {
-            deletePost(image.id, { auth })
-            .then(() => updateImages())
-            .catch(error => console.log('Error deleting image: ', error));
-            }}></img>
-          </div>
-        ))}
+      {images && images.map(image => (
+  <div key={image.id} className="image-post">
+    <img 
+      src={`${baseUrl}/${image.image}`}  
+      alt={image.title}
+      className="image-post-img"
+    />
+    <h4 className="image-post-title">{image.title}</h4>
+    <p className="text-center">{image.description}</p>
+    <p className="text-center">Uploaded by: {image.uploader_username}</p> {/* Updated line */}
+    <img 
+      id='trash' 
+      src={Trash} 
+      onClick={() => {
+        deletePost(image.id, { auth })
+          .then(() => updateImages())
+          .catch(error => console.log('Error deleting image: ', error));
+      }}
+      alt="Delete"
+    />
+  </div>
+))}
+
       </div>
     </div>
   );
