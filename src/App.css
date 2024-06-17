@@ -763,3 +763,7 @@ body {
     display: none; /* Hide close icon on desktop */
   }
 }
+
+.Toastify {
+  z-index: 10000; /* Adjust the value as needed */
+}
