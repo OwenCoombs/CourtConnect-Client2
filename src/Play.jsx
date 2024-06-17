@@ -9,6 +9,7 @@ const PlayNow = () => {
     const [filteredCourts, setFilteredCourts] = useState([]); // State to store filtered courts
     const [totalActiveUsers, setTotalActiveUsers] = useState(0); // State to store total active users
     const [isPolling, setIsPolling] = useState(true); // State to control polling for court updates
+    const [isSearching, setIsSearching] = useState(false); // State to indicate if a search is active
     const localChangesRef = useRef({}); // Ref to track local changes
 
     useEffect(() => {
@@ -34,7 +35,9 @@ const PlayNow = () => {
                         };
                     });
                     setCourts(courtsWithData); // Update courts state with fetched data
-                    setFilteredCourts(courtsWithData); // Initially set filtered courts to all courts
+                    if (!isSearching) {
+                        setFilteredCourts(courtsWithData); // Update filtered courts only if not searching
+                    }
                     const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                     setTotalActiveUsers(initialActiveUsers); // Calculate and update total active users
                 } else {
@@ -52,10 +55,13 @@ const PlayNow = () => {
 
             return () => clearInterval(intervalId); // Cleanup function to clear interval when component unmounts or when isPolling changes
         }
-    }, [auth, isPolling]); // Dependencies: auth and isPolling state
+    }, [auth, isPolling, isSearching]); // Dependencies: auth, isPolling, and isSearching state
 
     const handleInputChange = (event) => {
         setQuery(event.target.value);
+        if (event.target.value === '') {
+            setIsSearching(false); // Reset searching state if query is empty
+        }
     };
 
     const handleSearch = () => {
@@ -66,6 +72,7 @@ const PlayNow = () => {
             court.amenities.toLowerCase().includes(lowerCaseQuery)
         );
         setFilteredCourts(filtered);
+        setIsSearching(true); // Set searching state when a search is performed
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
@@ -177,6 +184,3 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
-
-
-
