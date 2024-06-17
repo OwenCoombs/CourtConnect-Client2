@@ -616,3 +616,63 @@ body {
 #Logoscreen {
   width: 200px;
 }
+
+
+.btn-modern {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern:hover {
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+  transform: translateY(-2px);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+.save-btn {
+  margin-right: 10px;
+}
+
+.edit-btn {
+  margin-right: 10px;
+}
+
+
+.btn-modern {
+  background: var(--primary-color);
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-modern:hover {
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.btn-modern:active {
+  transform: translateY(0);
+}
+
+.save-btn {
+  margin-right: 10px;
+}
+
+.edit-btn {
+  margin-right: 10px;
+}

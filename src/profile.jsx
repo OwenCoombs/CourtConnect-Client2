@@ -16,6 +16,7 @@ export default function ProfilePage() {
     if (auth.accessToken) {
       fetchUserPosts();
     }
+    loadProfileFromLocalStorage();
   }, [auth.accessToken]);
 
   const fetchUserPosts = async () => {
@@ -42,6 +43,7 @@ export default function ProfilePage() {
 
   const handleSaveClick = () => {
     setIsEditing(false);
+    saveProfileToLocalStorage();
   };
 
   const handleNameChange = (e) => {
@@ -50,6 +52,7 @@ export default function ProfilePage() {
       ...prevProfile,
       name: newName,
     }));
+    localStorage.setItem('profileName', newName);  // Save name to local storage
   };
 
   const handleEmailChange = (e) => {
@@ -58,10 +61,11 @@ export default function ProfilePage() {
       ...prevProfile,
       email: newEmail,
     }));
+    localStorage.setItem('profileEmail', newEmail);  // Save email to local storage
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem('accessToken');  // Remove only the access token
     sessionStorage.clear();
     navigate('/');
     window.location.reload();
@@ -71,6 +75,23 @@ export default function ProfilePage() {
     await fetchUserPosts();
   };
 
+  const saveProfileToLocalStorage = () => {
+    localStorage.setItem('profileName', liveProfile.profile.name);
+    localStorage.setItem('profileEmail', liveProfile.profile.email);
+  };
+
+  const loadProfileFromLocalStorage = () => {
+    const name = localStorage.getItem('profileName');
+    const email = localStorage.getItem('profileEmail');
+    if (name || email) {
+      liveProfile.setProfile((prevProfile) => ({
+        ...prevProfile,
+        name: name || prevProfile.name,
+        email: email || prevProfile.email,
+      }));
+    }
+  };
+
   return (
     <section className="personal-profile">
       <div className="profile-container">
@@ -78,11 +99,11 @@ export default function ProfilePage() {
           <UploadImage updateImages={updateImages} />
           <div>
             {isEditing ? (
-              <button className="twitter-btn save-btn" onClick={handleSaveClick}>Save</button>
+              <button className="btn-modern save-btn" onClick={handleSaveClick}>Save</button>
             ) : (
               <>
-                <button className="twitter-btn edit-btn" onClick={handleEditClick}>Edit Profile</button>
-                <button className="twitter-btn logout-btn" onClick={logout}>Logout</button>
+                <button className="btn-modern edit-btn" onClick={handleEditClick}>Edit Profile</button>
+                <button className="btn-modern logout-btn" onClick={logout}>Logout</button>
               </>
             )}
           </div>
@@ -94,7 +115,8 @@ export default function ProfilePage() {
             {isEditing ? (
               <div className="info-row">
                 <div className="info-item">
-                  <input
+                  <h6>Your Name: </h6>
+                  <input 
                     type="text"
                     value={liveProfile.profile.name}
                     onChange={handleNameChange}
@@ -102,6 +124,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="info-item">
+                  <h6>Your Email: </h6>
                   <input
                     type="text"
                     value={liveProfile.profile.email}
