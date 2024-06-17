@@ -34,7 +34,7 @@ const Images = () => {
         {images && images.map(image => (
           <div key={image.pk} className="image-post">
             <img 
-              src={`http://127.0.0.1:8000/${image.image}`}  
+              src={`${baseUrl}/${image.image}`}  
               alt={image.title}
               className="image-post-img"
             />
