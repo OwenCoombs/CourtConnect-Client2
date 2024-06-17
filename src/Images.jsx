@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AuthContext } from "./context";
+import { Context } from "./context";
 import { getImages } from "./api";
 import UploadImage from "./uploadImage";
 import axios from "axios";
@@ -10,7 +10,7 @@ import Trash from './assets/trash-solid.svg'
 
 const Images = () => {
   const [images, setImages] = useState([]);
-  const { auth } = useContext(AuthContext);
+  const { auth } = useContext(Context);
 
   const updateImages = () => {
     getImages({ auth })
