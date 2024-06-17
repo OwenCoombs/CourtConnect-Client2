@@ -10,10 +10,11 @@ import { createImage } from './api'; // Adjust the import if necessary
 
   const submit = async () => {
     try {
+      console.log('Title value:', title); // Add this line
       await createImage({ auth, image, title });
       console.log('Image uploaded successfully');
-      updateImages(); // Call the function to update images after successful upload
-      clearForm(); // Clear form fields after successful upload
+      updateImages();
+      clearForm();
     } catch (error) {
       console.error('Error uploading image:', error);
     }
