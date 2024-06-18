@@ -177,3 +177,30 @@ export const getUserPosts = async (accessToken) => {
   }
 };
 
+
+
+
+export const createReview = ({ auth, courtId, rating, comment }) => {
+  return axios.post(
+    `${baseUrl}/create-review/${courtId}/`,
+    {
+      court_id: courtId,
+      rating: rating,
+      comment: comment
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`
+      }
+    }
+  );
+};
+
+
+export const getCourtReviews = ({ auth, courtId }) => {
+  return axios.get(`${baseUrl}/get-court-reviews/${courtId}/`, {
+    headers: {
+      Authorization: `Bearer ${auth.accessToken}`
+    }
+  });
+};
