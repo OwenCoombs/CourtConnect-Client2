@@ -32,7 +32,7 @@ const Images = () => {
   return (
     <div key={image.id} className="image-post">
       <img 
-        src={`${baseUrl}${image.image}`}  
+        src={`${baseUrl}/${image.image}`}  
         alt={image.title}
         className="image-post-img"
       />
