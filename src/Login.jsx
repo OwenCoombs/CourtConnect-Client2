@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { Context } from "./context";
 import { fetchUser, getToken } from "./api";
 import { Link, useNavigate } from "react-router-dom";
-
+// a change has occurred!
 function Login() {
   const { auth, liveProfile } = useContext(Context); // Ensure correct destructuring
   const [username, setUsername] = useState("");
