@@ -63,7 +63,7 @@ export const createUser = ({ username, password, firstName, lastName }) => {
 export const getImages = ({ auth }) => {
   return axios({
     method: 'get', 
-    url: `${baseUrl}get-images/`,
+    url: `${baseUrl}/get-images/`,
     headers: {
       Authorization: `Bearer ${auth.accessToken}`
     }
