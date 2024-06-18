@@ -182,6 +182,7 @@ export default function ProfilePage() {
                       )}
                     </div>
                   </div>
+                  <h4 className="twitter-post-title"><em>@{post.uploader_username}</em></h4>
                   <h4 className="twitter-post-title"><strong>{post.title}</strong></h4>
                   <p className="twitter-post-description">{post.desc}</p>
                   <div className="like-button" onClick={() => handleLikePost(post.id)}>

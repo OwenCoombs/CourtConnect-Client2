@@ -66,6 +66,7 @@ const LiveFeed = () => {
                       <span className="like-count">{likes[image.pk]} likes</span>
                     </div>
                   </div>
+                  <h4 className="twitter-post-title"><em>@{image.uploader_username}</em></h4>
                   <h4 className="twitter-post-title"><strong>{image.title}</strong></h4>
                   <p className="twitter-post-description">{image.desc}</p>
                 </div>

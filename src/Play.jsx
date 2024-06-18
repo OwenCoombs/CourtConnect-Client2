@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { getCourts, setActiveUser } from './api'; // Importing API functions for fetching courts and setting active user
+import { getCourts, setActiveUser, createReview, getCourtReviews } from './api'; // Importing API functions
 import { Context } from './context'; // Importing context for authentication
+import StarRating from './StarRating';
 
 const PlayNow = () => {
     const { auth } = useContext(Context); // Accessing authentication context
@@ -10,6 +11,11 @@ const PlayNow = () => {
     const [totalActiveUsers, setTotalActiveUsers] = useState(0); // State to store total active users
     const [isPolling, setIsPolling] = useState(true); // State to control polling for court updates
     const [isSearching, setIsSearching] = useState(false); // State to indicate if a search is active
+    const [reviewText, setReviewText] = useState(''); // State to store review text
+    const [selectedRating, setSelectedRating] = useState(5); // State to store selected rating
+    const [courtReviews, setCourtReviews] = useState({}); // State to store court reviews
+    const [showReviews, setShowReviews] = useState({}); // State to control showing/hiding of reviews
+    const [showReviewForm, setShowReviewForm] = useState({}); // State to control showing/hiding of review form
     const localChangesRef = useRef({}); // Ref to track local changes
 
     useEffect(() => {
@@ -56,6 +62,35 @@ const PlayNow = () => {
             return () => clearInterval(intervalId); // Cleanup function to clear interval when component unmounts or when isPolling changes
         }
     }, [auth, isPolling, isSearching]); // Dependencies: auth, isPolling, and isSearching state
+
+    useEffect(() => {
+        const fetchReviewsForCourts = async () => {
+            if (!auth || !auth.accessToken || !courts.length) {
+                console.error('No access token provided or no courts available');
+                return;
+            }
+            try {
+                const courtReviewsPromises = courts.map(async court => {
+                    try {
+                        const reviewsResponse = await getCourtReviews({ auth, courtId: court.id });
+                        return { courtId: court.id, reviews: reviewsResponse.data };
+                    } catch (error) {
+                        console.error('Failed to fetch court reviews:', error);
+                        return { courtId: court.id, reviews: [] };
+                    }
+                });
+                const courtReviewsData = await Promise.all(courtReviewsPromises);
+                const reviewsData = courtReviewsData.reduce((acc, { courtId, reviews }) => {
+                    acc[courtId] = reviews;
+                    return acc;
+                }, {});
+                setCourtReviews(reviewsData);
+            } catch (error) {
+                console.error('Failed to fetch court reviews for all courts:', error);
+            }
+        };
+        fetchReviewsForCourts();
+    }, [auth, courts]);
 
     const handleInputChange = (event) => {
         setQuery(event.target.value);
@@ -140,6 +175,44 @@ const PlayNow = () => {
         }
     };
 
+    const handleReviewInputChange = (event) => {
+        setReviewText(event.target.value);
+    };
+
+    const handleCreateReview = async (courtId) => {
+        try {
+            const response = await createReview({ auth, courtId, rating: selectedRating, comment: reviewText });
+            console.log('Review created:', response);
+            setReviewText(''); // Clear review text after submission
+            // Fetch updated reviews for the court
+            const reviewsResponse = await getCourtReviews({ auth, courtId });
+            setCourtReviews(prevReviews => ({
+                ...prevReviews,
+                [courtId]: reviewsResponse.data
+            }));
+        } catch (error) {
+            console.error('Failed to create review:', error);
+        }
+    };
+
+    const handleRatingChange = (newRating) => {
+        setSelectedRating(newRating);
+    };
+
+    const toggleShowReviews = (courtId) => {
+        setShowReviews(prevState => ({
+            ...prevState,
+            [courtId]: !prevState[courtId]
+        }));
+    };
+
+    const toggleShowReviewForm = (courtId) => {
+        setShowReviewForm(prevState => ({
+            ...prevState,
+            [courtId]: !prevState[courtId]
+        }));
+    };
+
     return (
         <div className="play-now-container">
             <div className="search-container">
@@ -173,6 +246,46 @@ const PlayNow = () => {
                                 <div className="active-users">
                                     {Math.max(court.activeUsers, 0)} {court.activeUsers === 1 ? 'active user' : 'active users'}
                                 </div>
+                                <div className="review-section">
+                                    {!showReviewForm[court.id] && (
+                                        <button className="leave-review-button" onClick={() => toggleShowReviewForm(court.id)}>
+                                            Leave a Review
+                                        </button>
+                                    )}
+                                    {showReviewForm[court.id] && (
+                                        <div>
+                                            <textarea
+                                                className="review-textarea"
+                                                placeholder="Write a review..."
+                                                value={reviewText}
+                                                onChange={handleReviewInputChange}
+                                            ></textarea>
+                                            <StarRating value={selectedRating} onChange={handleRatingChange} />
+                                            <button
+                                                className="review-submit-button"
+                                                onClick={() => handleCreateReview(court.id)}
+                                            >
+                                                Submit Review
+                                            </button>
+                                        </div>
+                                    )}
+                                    <div className="court-reviews">
+                                        <h5>Reviews:</h5>
+                                        <button className="toggle-reviews" onClick={() => toggleShowReviews(court.id)}>
+                                            {showReviews[court.id] ? 'Hide Reviews' : 'Show Reviews'}
+                                        </button>
+                                        {showReviews[court.id] && (
+                                            <ul>
+                                                {courtReviews[court.id] && courtReviews[court.id].map(review => (
+                                                    <li key={review.id}>
+                                                        <div>Rating: {review.rating}</div>
+                                                        <div>Comment: {review.comment}</div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </li>
                     ))}
@@ -184,3 +297,5 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
+
