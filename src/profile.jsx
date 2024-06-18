@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 <div key={post.id} className="twitter-post">
                   <div className="image-container">
                     <img
-                      src={`${baseUrl}/${post.image}`}  
+                      src={`${baseUrl}${post.image}`}  
                       alt={post.title}
                       className="twitter-image"
                     />
