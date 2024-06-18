@@ -49,7 +49,7 @@ const UploadImage = ({ updateImages }) => {
         />
       </div>
       <div className="input-group">
-        <label className="input-label">Post Description</label>
+        <label className="input-label">Post Descriptions</label>
         <input 
           type="text"
           className="input-field"
