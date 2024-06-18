@@ -28,7 +28,7 @@ const Images = () => {
       <h1 className="text-center p-4">Your Feed</h1>
       <div className="images-grid">
       {images && images.map(image => {
-  console.log(image);
+  console.log('images!!!!',image);
   return (
     <div key={image.id} className="image-post">
       <img 
