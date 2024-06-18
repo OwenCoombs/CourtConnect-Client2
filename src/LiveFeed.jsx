@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "./context";
 import { getImages, deletePost } from "./api";
-import Trash from './assets/trash-solid.svg';
-import { baseUrl } from "./api";
-
+import Like from "./assets/heart-regular.svg"; // Add your like icon import here
+import { baseUrl } from "./api"; // Import likeImage function if needed
 
 const LiveFeed = () => {
   const [images, setImages] = useState([]);
+  const [likes, setLikes] = useState({}); // State to track likes
   const { auth } = useContext(Context);
 
   const updateImages = () => {
@@ -14,6 +14,9 @@ const LiveFeed = () => {
       .then(response => {
         console.log('GET IMAGES: RESPONSE: ', response);
         setImages(response.data);
+        const initialLikes = {};
+        response.data.forEach(image => initialLikes[image.pk] = 0); // Initialize likes
+        setLikes(initialLikes);
       })
       .catch(error => console.log('ERROR: ', error));
   };
@@ -33,6 +36,14 @@ const LiveFeed = () => {
     }
   };
 
+  const handleLikePost = (postId) => {
+    // Simulate liking the post, you may need to implement an API call here
+    setLikes(prevLikes => ({
+      ...prevLikes,
+      [postId]: prevLikes[postId] + 1
+    }));
+  };
+
   return (
     <section className="personal-profile">
       <div className="profile-container">
@@ -49,9 +60,14 @@ const LiveFeed = () => {
                       alt={image.title}
                       className="twitter-image"
                     />
+                    {/* Like button */}
+                    <div className="like-button" onClick={() => handleLikePost(image.pk)}>
+                      <img src={Like} alt="Like" className="like-icon" />
+                      <span className="like-count">{likes[image.pk]} likes</span>
+                    </div>
                   </div>
-                  <h4 className="twitter-post-title">{image.title}</h4>
-                  <p className="twitter-post-description">{image.description}</p>
+                  <h4 className="twitter-post-title"><strong>{image.title}</strong></h4>
+                  <p className="twitter-post-description">{image.desc}</p>
                 </div>
               ))}
             </div>
@@ -63,3 +79,4 @@ const LiveFeed = () => {
 }
 
 export default LiveFeed;
+

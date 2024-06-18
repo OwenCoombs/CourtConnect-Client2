@@ -71,9 +71,11 @@ export const getImages = ({ auth }) => {
 }
 
 
-export const createImage = ({ auth, image }) => {
+export const createImage = ({ auth, image, title, desc }) => {
   const formData = new FormData();
   formData.append('image', image);
+  formData.append('title', title);
+  formData.append('desc', desc);
 
   return axios.post(`${baseUrl}/create-image/`, formData, {
     headers: {
@@ -174,3 +176,4 @@ export const getUserPosts = async (accessToken) => {
     throw error;
   }
 };
+

@@ -3,13 +3,15 @@ import { Context } from './context';
 import UploadImage from './uploadImage';
 import { useNavigate } from 'react-router-dom';
 import { baseUrl, getUserPosts, deletePost } from './api';
-import Trash from './assets/trash-solid.svg';
+import Like from './assets/heart-regular.svg'; // Add a like icon
 
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [showPostActions, setShowPostActions] = useState(null); // State to manage showing post actions dropdown
   const { auth, liveProfile } = useContext(Context);
   const [userPosts, setUserPosts] = useState([]);
+  const [likes, setLikes] = useState({}); // State to track likes
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +25,9 @@ export default function ProfilePage() {
     try {
       const posts = await getUserPosts(auth.accessToken);
       setUserPosts(posts);
+      const initialLikes = {};
+      posts.forEach(post => initialLikes[post.id] = 0); // Initialize likes
+      setLikes(initialLikes);
     } catch (error) {
       console.error("Error fetching user posts:", error);
     }
@@ -35,6 +40,13 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error deleting post:", error);
     }
+  };
+
+  const handleLikePost = (postId) => {
+    setLikes(prevLikes => ({
+      ...prevLikes,
+      [postId]: prevLikes[postId] + 1
+    }));
   };
 
   const handleEditClick = () => {
@@ -52,7 +64,7 @@ export default function ProfilePage() {
       ...prevProfile,
       name: newName,
     }));
-    localStorage.setItem('profileName', newName);  // Save name to local storage
+    localStorage.setItem('profileName', newName);
   };
 
   const handleEmailChange = (e) => {
@@ -61,11 +73,11 @@ export default function ProfilePage() {
       ...prevProfile,
       email: newEmail,
     }));
-    localStorage.setItem('profileEmail', newEmail);  // Save email to local storage
+    localStorage.setItem('profileEmail', newEmail);
   };
 
   const logout = () => {
-    localStorage.removeItem('accessToken');  // Remove only the access token
+    localStorage.removeItem('accessToken');
     sessionStorage.clear();
     navigate('/');
     window.location.reload();
@@ -89,6 +101,14 @@ export default function ProfilePage() {
         name: name || prevProfile.name,
         email: email || prevProfile.email,
       }));
+    }
+  };
+
+  const handleTogglePostActions = (postId) => {
+    if (showPostActions === postId) {
+      setShowPostActions(null);
+    } else {
+      setShowPostActions(postId);
     }
   };
 
@@ -152,15 +172,22 @@ export default function ProfilePage() {
                       alt={post.title}
                       className="twitter-image"
                     />
-                    <img 
-                      className="twitter-trash-icon"
-                      src={Trash}
-                      alt="Delete" 
-                      onClick={() => handleDeletePost(post.id)}
-                    />
+                    <div className="post-actions">
+                      <button className="btn-modern post-actions-btn" onClick={() => handleTogglePostActions(post.id)}>...</button>
+                      {showPostActions === post.id && (
+                        <div className="post-actions-dropdown">
+                          <button className="btn-modern delete-post-btn" onClick={() => handleDeletePost(post.id)}>Delete</button>
+                          {/* Add more actions as needed */}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <h4 className="twitter-post-title">{post.title}</h4>
-                  <p className="twitter-post-description">{post.description}</p>
+                  <h4 className="twitter-post-title"><strong>{post.title}</strong></h4>
+                  <p className="twitter-post-description">{post.desc}</p>
+                  <div className="like-button" onClick={() => handleLikePost(post.id)}>
+                    <img src={Like} alt="Like" className="like-icon" />
+                    <span className="like-count">{likes[post.id]} likes</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -170,3 +197,4 @@ export default function ProfilePage() {
     </section>
   );
 }
+
