@@ -63,7 +63,7 @@ export const createUser = ({ username, password, firstName, lastName }) => {
 export const getImages = ({ auth }) => {
   return axios({
     method: 'get', 
-    url: `${baseUrl}/get-images/`,
+    url: `${baseUrl}get-images/`,
     headers: {
       Authorization: `Bearer ${auth.accessToken}`
     }
@@ -166,7 +166,7 @@ export const deletePost = async (imageId, {auth}) => {
 
 export const getUserPosts = async (accessToken) => {
   try {
-    const response = await axios.get(`${baseUrl}/get-user-images/`, {
+    const response = await axios.get(`${baseUrl}get-user-images/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
