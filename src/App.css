@@ -226,6 +226,27 @@ body {
   }
 }
 
+
+
+/* Like button */
+.like-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.like-button .like-icon {
+  width: 24px; /* Adjust icon size as needed */
+  margin-right: 8px;
+}
+
+.like-button .like-count {
+  font-size: 14px;
+  color: #777;
+}
+
+
 .search-container {
   display: flex;
   align-items: center;
@@ -474,12 +495,55 @@ body {
   border-radius: 8px;
 }
 
-.twitter-trash-icon {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin-top: 5px;
+/* ProfilePage.css */
+/* ProfilePage.css */
+.post-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
+
+.post-actions-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  font-size: 20px;
+}
+
+.post-actions-btn:hover {
+  color: #000;
+}
+
+.post-actions-dropdown {
+  position: absolute;
+  top: 0;
+  bottom: -10px;
+  right: -1px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+  padding: 8px;
+}
+
+.post-actions-dropdown button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+}
+
+.post-actions-dropdown button:hover {
+  background-color: #f2f2f2;
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 600px) {

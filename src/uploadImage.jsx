@@ -1,17 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { Context } from './context'; // Adjust the import if necessary
-import { createImage } from './api'; // Adjust the import if necessary
+import { Context } from './context';
+import { createImage } from './api';
 
-
- const UploadImage = ({ updateImages }) => {
+const UploadImage = ({ updateImages }) => {
   const { auth } = useContext(Context);
   const [image, setImage] = useState(undefined);
   const [title, setTitle] = useState('');
+  const [desc, seetDesc] = useState('')
 
   const submit = async () => {
     try {
-      console.log('Title value:', title); // Add this line
-      await createImage({ auth, image, title });
+      console.log('Title value:', title);
+      await createImage({ auth, image, title, desc });
       console.log('Image uploaded successfully');
       updateImages();
       clearForm();
@@ -23,6 +23,7 @@ import { createImage } from './api'; // Adjust the import if necessary
   const clearForm = () => {
     setImage(undefined);
     setTitle('');
+    seetDesc('');
   };
 
   return (
@@ -47,6 +48,15 @@ import { createImage } from './api'; // Adjust the import if necessary
           value={title}
         />
       </div>
+      <div className="input-group">
+        <label className="input-label">Post Description</label>
+        <input 
+          type="text"
+          className="input-field"
+          onChange={e => seetDesc(e.target.value)}
+          value={desc}
+        />
+      </div>
       <div className="button-group">
         <button className="submit-button" onClick={submit}>
           Upload
@@ -58,8 +68,5 @@ import { createImage } from './api'; // Adjust the import if necessary
 
 export default UploadImage;
 
-
-
-  
 
 
