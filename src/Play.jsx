@@ -5,6 +5,7 @@ import StarRating from './StarRating';
 
 const PlayNow = () => {
     const { auth } = useContext(Context); // Accessing authentication context
+    const [loading, setLoading] = useState(true); // State to track loading status
     const [query, setQuery] = useState(''); // State to store search query
     const [courts, setCourts] = useState([]); // State to store courts data
     const [filteredCourts, setFilteredCourts] = useState([]); // State to store filtered courts
@@ -31,13 +32,10 @@ const PlayNow = () => {
                     const courtsWithData = response.map(court => {
                         const userActive = court.active_users.some(user => user.id === userId); // Check if current user is active in this court
                         const activeUsers = court.active_users.length; // Count total active users in this court
-                        const localChange = localChangesRef.current[court.id];
                         return {
                             ...court,
-                            userActive: localChange !== undefined ? localChange : userActive,
-                            activeUsers: localChange !== undefined
-                                ? (localChange ? activeUsers + 1 : activeUsers - 1)
-                                : activeUsers,
+                            userActive,
+                            activeUsers,
                         };
                     });
                     setCourts(courtsWithData); // Update courts state with fetched data
@@ -51,6 +49,8 @@ const PlayNow = () => {
                 }
             } catch (error) {
                 console.error('Failed to fetch courts:', error);
+            } finally {
+                setLoading(false); // Set loading to false when courts are fetched
             }
         };
 
@@ -128,46 +128,29 @@ const PlayNow = () => {
             if (response.error) {
                 console.error(response.error); // Log error if API request fails
             } else {
-                // Update courts state with new active status
-                const updatedCourts = courts.map(court => {
-                    if (court.id === courtId) {
-                        const updatedActiveUsers = newActiveStatus
-                        ? Math.max(court.activeUsers + 1, 0) // Increment activeUsers by 1
-                        : Math.max(court.activeUsers - 1, 0); // Decrement activeUsers by 1, ensuring it doesn't go below 0
+                // Fetch the updated courts data after setting active status
+                const updatedCourtsResponse = await getCourts({ auth });
+                if (updatedCourtsResponse && Array.isArray(updatedCourtsResponse)) {
+                    const userId = auth.userId;
+                    const updatedCourts = updatedCourtsResponse.map(court => {
+                        const userActive = court.active_users.some(user => user.id === userId);
+                        const activeUsers = court.active_users.length;
                         return {
                             ...court,
-                            userActive: newActiveStatus,
-                            activeUsers: updatedActiveUsers,
+                            userActive,
+                            activeUsers,
                         };
-                    }
-                    return court;
-                });
+                    });
+                    setCourts(updatedCourts);
+                    setFilteredCourts(updatedCourts);
 
-                console.log('Updated courts:', updatedCourts);
+                    const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    setTotalActiveUsers(updatedActiveUsers);
+                } else {
+                    console.error('Failed to update courts after setting active status');
+                }
 
-                setCourts(updatedCourts); // Update courts state with updated data
-
-                // Update filtered courts as well to reflect changes
-                const updatedFilteredCourts = filteredCourts.map(court => {
-                    if (court.id === courtId) {
-                        const updatedActiveUsers = newActiveStatus
-                        ? Math.max(court.activeUsers + 1, 0)
-                        : Math.max(court.activeUsers - 1, 0);
-                        return {
-                            ...court,
-                            userActive: newActiveStatus,
-                            activeUsers: updatedActiveUsers,
-                        };
-                    }
-                    return court;
-                });
-
-                setFilteredCourts(updatedFilteredCourts);
-
-                const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers); // Update total active users count
-
-                setIsPolling(true); // Resume polling
+                setIsPolling(true);
             }
         } catch (error) {
             console.error('Failed to update user status at court:', error); // Log error if setting active user fails
@@ -213,6 +196,16 @@ const PlayNow = () => {
         }));
     };
 
+    if (loading) {
+        // Render loading animation here
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+            </div>
+        );
+    }
+
+    // Render the rest of the component
     return (
         <div className="play-now-container">
             <div className="search-container">
@@ -236,66 +229,69 @@ const PlayNow = () => {
                                 <div className="court-name">{court.name}</div>
                                 <div className="court-location">{court.location}</div>
                                 <div className="court-amenities"><strong>Amenities:</strong> {court.amenities}</div>
-                                <button
-                                    className={`court-action-button ${court.userActive ? 'leave' : 'play'}`}
-                                    onClick={() => handleSetActive(court.id, court.userActive)}
-                                    disabled={!isPolling} // Disable button while updating
-                                >
-                                    {court.userActive ? 'Leave Game' : 'Play Here!'}
+                                <div className="court-active-users"><strong>Active Users:</strong> {court.activeUsers}</div>
+                            </div>
+                            <div className="court-actions">
+                                {court.userActive ? (
+                                    <button className="leave-button" onClick={() => handleSetActive(court.id, court.userActive)}>
+                                        Leave Game
+                                    </button>
+                                ) : (
+                                    <button className="join-button" onClick={() => handleSetActive(court.id, court.userActive)}>
+                                        Join Game
+                                    </button>
+                                )}
+                                <button className="show-reviews-button" onClick={() => toggleShowReviews(court.id)}>
+                                    {showReviews[court.id] ? 'Hide Reviews' : 'Show Reviews'}
                                 </button>
-                                <div className="active-users">
-                                    {Math.max(court.activeUsers, 0)} {court.activeUsers === 1 ? 'active user' : 'active users'}
-                                </div>
-                                <div className="review-section">
-                                    {!showReviewForm[court.id] && (
-                                        <button className="leave-review-button" onClick={() => toggleShowReviewForm(court.id)}>
-                                            Leave a Review
-                                        </button>
-                                    )}
-                                    {showReviewForm[court.id] && (
-                                        <div>
-                                            <textarea
-                                                className="review-textarea"
-                                                placeholder="Write a review..."
-                                                value={reviewText}
-                                                onChange={handleReviewInputChange}
-                                            ></textarea>
-                                            <StarRating value={selectedRating} onChange={handleRatingChange} />
-                                            <button
-                                                className="review-submit-button"
-                                                onClick={() => handleCreateReview(court.id)}
-                                            >
-                                                Submit Review
-                                            </button>
-                                        </div>
-                                    )}
-                                    <div className="court-reviews">
-                                        <h5>Reviews:</h5>
-                                        <button className="toggle-reviews" onClick={() => toggleShowReviews(court.id)}>
-                                            {showReviews[court.id] ? 'Hide Reviews' : 'Show Reviews'}
-                                        </button>
-                                        {showReviews[court.id] && (
-                                            <ul>
-                                                {courtReviews[court.id] && courtReviews[court.id].map(review => (
-                                                    <li key={review.id}>
-                                                        <div>Rating: {review.rating}</div>
-                                                        <div>Comment: {review.comment}</div>
+                                {showReviews[court.id] && (
+                                    <div className="reviews-section">
+                                        {courtReviews[court.id] && courtReviews[court.id].length > 0 ? (
+                                            <ul className="reviews-list">
+                                                {courtReviews[court.id].map(review => (
+                                                    <li key={review.id} className="review-item">
+                                                        <div className="review-rating">
+                                                            <StarRating rating={review.rating} />
+                                                        </div>
+                                                        <div className="review-comment">{review.comment}</div>
                                                     </li>
                                                 ))}
                                             </ul>
+                                        ) : (
+                                            <p>No reviews available.</p>
+                                        )}
+                                        <button className="add-review-button" onClick={() => toggleShowReviewForm(court.id)}>
+                                            {showReviewForm[court.id] ? 'Cancel Review' : 'Add Review'}
+                                        </button>
+                                        {showReviewForm[court.id] && (
+                                            <div className="review-form">
+                                                <StarRating rating={selectedRating} onRatingChange={handleRatingChange} />
+                                                <textarea
+                                                    className="review-textarea"
+                                                    value={reviewText}
+                                                    onChange={handleReviewInputChange}
+                                                    placeholder="Write your review here..."
+                                                />
+                                                <button className="submit-review-button" onClick={() => handleCreateReview(court.id)}>
+                                                    Submit Review
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-            <div>Total Active Users: {Math.max(totalActiveUsers, 0)}</div>
+            <div className="footer">
+                <p>Total Active Users: {totalActiveUsers}</p>
+            </div>
         </div>
     );
 };
 
 export default PlayNow;
+
 
 
