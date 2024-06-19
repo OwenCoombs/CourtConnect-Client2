@@ -137,16 +137,18 @@ const PlayNow = () => {
                 );
     
                 // Update total active users based on the updated courts data
-                const updatedActiveUsers = prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers);
-            }
+                const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                setTotalActiveUsers(updatedActiveUsers); // Assuming courts is used here
     
-            setIsPolling(true);
+                setIsPolling(true);
+            }
         } catch (error) {
             console.error('Failed to update user status at court:', error);
             setIsPolling(true);
         }
     };
+    
+    
     
 
     const handleReviewInputChange = (event) => {
