@@ -52,12 +52,14 @@ const PlayNow = () => {
                 setLoading(false);
             }
         };
-    
-        fetchCourts(); // Call fetchCourts immediately upon component mount
-    
-        // Clear any intervals or timeouts, and clean up
-        return () => {};
-    }, [auth, isSearching]);
+
+        if (isPolling) {
+            const intervalId = setInterval(() => {
+                fetchCourts();
+            }, 4000);
+            return () => clearInterval(intervalId);
+        }
+    }, [auth, isPolling, isSearching]);
 
     useEffect(() => {
         const fetchReviewsForCourts = async () => {
@@ -108,48 +110,43 @@ const PlayNow = () => {
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
         console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus);
-
+    
         const newActiveStatus = !currentActiveStatus;
-
+    
         try {
             setIsPolling(false);
-
+    
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
-
+    
             console.log('API response:', response);
-
+    
             if (response.error) {
                 console.error(response.error);
             } else {
-                // Fetch the updated courts data after setting active status
-                const updatedCourtsResponse = await getCourts({ auth });
-                if (updatedCourtsResponse && Array.isArray(updatedCourtsResponse)) {
-                    const userId = auth.userId;
-                    const updatedCourts = updatedCourtsResponse.map(court => {
-                        const userActive = court.active_users.some(user => user.id === userId);
-                        const activeUsers = court.active_users.length;
-                        return {
-                            ...court,
-                            userActive,
-                            activeUsers,
-                        };
-                    });
-                    setCourts(updatedCourts);
-                    setFilteredCourts(updatedCourts);
-
-                    const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                    setTotalActiveUsers(updatedActiveUsers);
-                } else {
-                    console.error('Failed to update courts after setting active status');
-                }
-
-                setIsPolling(true);
+                // Update only the specific court that changed
+                setCourts(prevCourts =>
+                    prevCourts.map(court =>
+                        court.id === courtId ? { ...court, userActive: newActiveStatus } : court
+                    )
+                );
+    
+                setFilteredCourts(prevCourts =>
+                    prevCourts.map(court =>
+                        court.id === courtId ? { ...court, userActive: newActiveStatus } : court
+                    )
+                );
+    
+                const updatedActiveUsers = prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                setTotalActiveUsers(updatedActiveUsers);
             }
+    
+            setIsPolling(true);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
             setIsPolling(true);
         }
     };
+    
 
     const handleReviewInputChange = (event) => {
         setReviewText(event.target.value);
