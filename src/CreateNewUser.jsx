@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createUser } from './api';
 import Header from "./Header";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -10,14 +10,18 @@ const CreateNewUser = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const navigate = useNavigate();
 
-
-  const submit = () => {
-     createUser({ username, password, firstName, lastName });
-
-
-
-  };
+  const submit = async () => {
+    try {
+        await createUser({ username, password, firstName, lastName });
+        navigate('/login');
+    } catch (error) {
+        // Handle error if createUser fails
+        console.error('Failed to create user:', error);
+        // You can display an error message to the user or take appropriate action
+    }
+};
 
   return (
     <>

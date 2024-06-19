@@ -43,22 +43,25 @@ export const fetchUser = async ({ token, liveProfile, auth }) => {
 };
 
 export const createUser = ({ username, password, firstName, lastName }) => {
-  axios({
-    method: 'post',
-    url: `${baseUrl}/create-user/`, 
-    data: {
-      username,
-      password: password,
-      first_name: firstName,
-      last_name: lastName
-    }
-  }).then(response => {
-    console.log('CREATE USER: ', response)
-  })
-  .catch(error => {
-    console.log('ERROR: ', error)
-  })
-}
+  return new Promise((resolve, reject) => {
+      axios({
+          method: 'post',
+          url: `${baseUrl}/create-user/`,
+          data: {
+              username,
+              password: password,
+              first_name: firstName,
+              last_name: lastName
+          }
+      }).then(response => {
+          console.log('CREATE USER: ', response);
+          resolve(response); // Resolve the promise with the response data
+      }).catch(error => {
+          console.log('ERROR: ', error);
+          reject(error); // Reject the promise with the error
+      });
+  });
+};
 
 export const getImages = ({ auth }) => {
   return axios({
