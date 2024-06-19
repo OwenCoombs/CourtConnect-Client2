@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createUser } from './api';
 import Header from "./Header";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 
 
@@ -10,11 +10,11 @@ const CreateNewUser = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const navigate = useNavigate();
+
 
   const submit = () => {
      createUser({ username, password, firstName, lastName });
-     navigate('/login')
+
 
 
   };
