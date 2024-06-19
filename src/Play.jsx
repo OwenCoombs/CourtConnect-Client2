@@ -123,7 +123,7 @@ const PlayNow = () => {
             if (response.error) {
                 console.error(response.error);
             } else {
-                // Update only the specific court that changed
+                // Update only the specific court's userActive state
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
@@ -136,6 +136,7 @@ const PlayNow = () => {
                     )
                 );
     
+                // Update total active users based on the updated courts data
                 const updatedActiveUsers = prevCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
                 setTotalActiveUsers(updatedActiveUsers);
             }
@@ -223,6 +224,7 @@ const PlayNow = () => {
                                 >
                                     {court.userActive ? 'Leave Game' : 'Play Here!'}
                                 </button>
+
                                 <div className="active-users">
                                     {Math.max(court.activeUsers, 0)} {court.activeUsers === 1 ? 'active user' : 'active users'}
                                 </div>
