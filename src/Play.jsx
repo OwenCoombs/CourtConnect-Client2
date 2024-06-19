@@ -109,47 +109,43 @@ const PlayNow = () => {
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        console.log('Setting active status for court:', courtId, 'Current status:', currentActiveStatus);
-    
         const newActiveStatus = !currentActiveStatus;
-    
+
         try {
             setIsPolling(false);
-    
+
             // Call the setActiveUser API
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
-    
-            console.log('API response from setActiveUser:', response);
-    
+
             if (response.error) {
                 console.error('Error from setActiveUser:', response.error);
-                // Handle error condition if needed
             } else {
-                // Update local state for courts and filteredCourts
+                // Update local state for courts
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
                     )
                 );
-    
+
+                // Update filteredCourts if needed
                 setFilteredCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
                     )
                 );
-    
+
                 // Update total active users based on the updated courts data
                 const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers + (newActiveStatus ? 1 : -1)); // Adjust based on newActiveStatus
+                setTotalActiveUsers(updatedActiveUsers + (newActiveStatus ? 1 : -1));
             }
-    
+
             setIsPolling(true);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
             setIsPolling(true);
         }
     };
-    
+
     const handleReviewInputChange = (event) => {
         setReviewText(event.target.value);
     };
@@ -280,3 +276,4 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
