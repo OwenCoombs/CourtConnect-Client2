@@ -29,7 +29,7 @@ const PlayNow = () => {
                 if (response && Array.isArray(response)) {
                     const userId = auth.userId;
                     const courtsWithData = response.map(court => {
-                        const userActive = court.active_users.some(user => user.id === userId && user.active);
+                        const userActive = court.active_users.some(user => user.id === userId);
                         const activeUsers = court.active_users.length;
                         return {
                             ...court,
@@ -52,6 +52,7 @@ const PlayNow = () => {
                 setLoading(false);
             }
         };
+
         if (isPolling) {
             const intervalId = setInterval(() => {
                 fetchCourts();
@@ -108,42 +109,41 @@ const PlayNow = () => {
     };
 
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        const newActiveStatus = !currentActiveStatus;
-
+        const newActiveStatus = !currentActiveStatus; // Toggle active status
+    
         try {
-            setIsPolling(false);
-
             // Call the setActiveUser API
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
-
+    
             if (response.error) {
                 console.error('Error from setActiveUser:', response.error);
+                // Handle error condition if needed
             } else {
-                // Update local state for courts
+                // Update local state for the current user
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
                     )
                 );
-
-                // Update filteredCourts if needed
+    
                 setFilteredCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
                     )
                 );
-
+    
                 // Update total active users based on the updated courts data
                 const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers + (newActiveStatus ? 1 : -1));
+                setTotalActiveUsers(updatedActiveUsers);
             }
-
-            setIsPolling(true);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
-            setIsPolling(true);
         }
     };
+    
+    
+    
+    
 
     const handleReviewInputChange = (event) => {
         setReviewText(event.target.value);
@@ -240,49 +240,40 @@ const PlayNow = () => {
                                             ></textarea>
                                             <StarRating value={selectedRating} onChange={handleRatingChange} />
                                             <button
-                                                className="submit-review-button"
+                                                className="review-submit-button"
                                                 onClick={() => handleCreateReview(court.id)}
                                             >
                                                 Submit Review
                                             </button>
                                         </div>
                                     )}
-                                    {!showReviews[court.id] && (
-                                        <button className="toggle-reviews-button" onClick={() => toggleShowReviews(court.id)}>
-                                            Show Reviews
+                                    <div className="court-reviews">
+                                        <h5>Reviews:</h5>
+                                        <button className="toggle-reviews" onClick={() => toggleShowReviews(court.id)}>
+                                            {showReviews[court.id] ? 'Hide Reviews' : 'Show Reviews'}
                                         </button>
-                                    )}
-                                    {showReviews[court.id] && (
-                                        <div className="reviews-container">
-                                            {courtReviews[court.id] && courtReviews[court.id].map(review => (
-                                                <div key={review.id} className="review">
-                                                    <div className="review-rating">
-                                                        {Array.from({ length: review.rating }).map((_, index) => (
-                                                            <span key={index}>⭐</span>
-                                                        ))}
-                                                    </div>
-                                                    <div className="review-comment">{review.comment}</div>
-                                                </div>
-                                            ))}
-                                            <button className="toggle-reviews-button" onClick={() => toggleShowReviews(court.id)}>
-                                                Hide Reviews
-                                            </button>
-                                        </div>
-                                    )}
+                                        {showReviews[court.id] && (
+                                            <ul>
+                                                {courtReviews[court.id] && courtReviews[court.id].map(review => (
+                                                    <li key={review.id}>
+                                                        <div>Rating: {review.rating}</div>
+                                                        <div>Comment: {review.comment}</div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
-            <div className="total-active-users">
-                <p>Total Active Users: {totalActiveUsers}</p>
-            </div>
+            <div>Total Active Users: {Math.max(totalActiveUsers, 0)}</div>
         </div>
     );
 };
 
 export default PlayNow;
-
 
 
