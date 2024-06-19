@@ -116,14 +116,16 @@ const PlayNow = () => {
         try {
             setIsPolling(false);
     
+            // Call the setActiveUser API
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
     
-            console.log('API response:', response);
+            console.log('API response from setActiveUser:', response);
     
             if (response.error) {
-                console.error(response.error);
+                console.error('Error from setActiveUser:', response.error);
+                // Handle error condition if needed
             } else {
-                // Update only the specific court's userActive state
+                // Update local state for courts and filteredCourts
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
                         court.id === courtId ? { ...court, userActive: newActiveStatus } : court
@@ -138,15 +140,16 @@ const PlayNow = () => {
     
                 // Update total active users based on the updated courts data
                 const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers); // Assuming courts is used here
-    
-                setIsPolling(true);
+                setTotalActiveUsers(updatedActiveUsers + (newActiveStatus ? 1 : -1)); // Adjust based on newActiveStatus
             }
+    
+            setIsPolling(true);
         } catch (error) {
             console.error('Failed to update user status at court:', error);
             setIsPolling(true);
         }
     };
+    
     
     
     
