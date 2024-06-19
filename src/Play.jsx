@@ -140,7 +140,7 @@ const PlayNow = () => {
     
                 // Update total active users based on the updated courts data
                 const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers + (newActiveStatus ? 1 : -1)); // Adjust based on newActiveStatus
+                setTotalActiveUsers(updatedActiveUsers);
             }
     
             setIsPolling(true);
@@ -148,8 +148,7 @@ const PlayNow = () => {
             console.error('Failed to update user status at court:', error);
             setIsPolling(true);
         }
-    };
-    
+    };    
     
     
     
