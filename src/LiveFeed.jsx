@@ -56,7 +56,7 @@ const LiveFeed = () => {
                 <div key={image.pk} className="twitter-post">
                   <div className="image-container">
                     <img 
-                      src={`${baseUrl}/${image.image}`}  
+                      src={`${baseUrl}${image.image}`}  
                       alt={image.title}
                       className="twitter-image"
                     />
