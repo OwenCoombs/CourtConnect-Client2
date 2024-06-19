@@ -29,7 +29,7 @@ const PlayNow = () => {
                 if (response && Array.isArray(response)) {
                     const userId = auth.userId;
                     const courtsWithData = response.map(court => {
-                        const userActive = court.active_users.some(user => user.id === userId);
+                        const userActive = court.active_users.some(user => user.id === userId && user.active);
                         const activeUsers = court.active_users.length;
                         return {
                             ...court,
@@ -52,7 +52,6 @@ const PlayNow = () => {
                 setLoading(false);
             }
         };
-
         if (isPolling) {
             const intervalId = setInterval(() => {
                 fetchCourts();
