@@ -52,14 +52,12 @@ const PlayNow = () => {
                 setLoading(false);
             }
         };
-
-        if (isPolling) {
-            const intervalId = setInterval(() => {
-                fetchCourts();
-            }, 4000);
-            return () => clearInterval(intervalId);
-        }
-    }, [auth, isPolling, isSearching]);
+    
+        fetchCourts(); // Call fetchCourts immediately upon component mount
+    
+        // Clear any intervals or timeouts, and clean up
+        return () => {};
+    }, [auth, isSearching]);
 
     useEffect(() => {
         const fetchReviewsForCourts = async () => {
