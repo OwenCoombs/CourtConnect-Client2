@@ -32,13 +32,10 @@ const PlayNow = () => {
                     const courtsWithData = response.map(court => {
                         const userActive = court.active_users.some(user => user.id === userId);
                         const activeUsers = court.active_users.length;
-                        const localChange = localChangesRef.current[court.id];
                         return {
                             ...court,
-                            userActive: localChange !== undefined ? localChange : userActive,
-                            activeUsers: localChange !== undefined
-                                ? (localChange ? activeUsers + 1 : activeUsers - 1)
-                                : activeUsers,
+                            userActive,
+                            activeUsers,
                         };
                     });
                     setCourts(courtsWithData);
@@ -119,9 +116,6 @@ const PlayNow = () => {
 
         try {
             setIsPolling(false);
-
-            // Track local change
-            localChangesRef.current[courtId] = newActiveStatus;
 
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
 
@@ -221,7 +215,7 @@ const PlayNow = () => {
     }
 
     return (
-        <div className="play-now-container">
+        <div className="playnow-container">
             <div className="search-container">
                 <input
                     type="text"
@@ -304,3 +298,4 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
