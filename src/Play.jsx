@@ -123,7 +123,7 @@ const PlayNow = () => {
                 // Update local state for courts
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
-                        court.id === courtId ? { ...court, userActive: newActiveStatus } : court
+                        court.id === courtId ? { ...court, userActive: newActiveStatus } : courtId
                     )
                 );
 
