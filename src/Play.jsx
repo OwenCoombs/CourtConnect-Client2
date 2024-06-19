@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { getCourts, setActiveUser, createReview, getCourtReviews } from './api';
 import { Context } from './context';
 import StarRating from './StarRating';
@@ -17,7 +17,6 @@ const PlayNow = () => {
     const [courtReviews, setCourtReviews] = useState({});
     const [showReviews, setShowReviews] = useState({});
     const [showReviewForm, setShowReviewForm] = useState({});
-    const localChangesRef = useRef({});
 
     useEffect(() => {
         const fetchCourts = async () => {
@@ -124,42 +123,27 @@ const PlayNow = () => {
             if (response.error) {
                 console.error(response.error);
             } else {
-                // Update courts state with new active status
-                const updatedCourts = courts.map(court => {
-                    if (court.id === courtId) {
-                        const updatedActiveUsers = newActiveStatus
-                            ? court.activeUsers + 1
-                            : court.activeUsers - 1;
+                // Fetch the updated courts data after setting active status
+                const updatedCourtsResponse = await getCourts({ auth });
+                if (updatedCourtsResponse && Array.isArray(updatedCourtsResponse)) {
+                    const userId = auth.userId;
+                    const updatedCourts = updatedCourtsResponse.map(court => {
+                        const userActive = court.active_users.some(user => user.id === userId);
+                        const activeUsers = court.active_users.length;
                         return {
                             ...court,
-                            userActive: newActiveStatus,
-                            activeUsers: updatedActiveUsers,
+                            userActive,
+                            activeUsers,
                         };
-                    }
-                    return court;
-                });
+                    });
+                    setCourts(updatedCourts);
+                    setFilteredCourts(updatedCourts);
 
-                setCourts(updatedCourts);
-
-                // Update filtered courts as well to reflect changes
-                const updatedFilteredCourts = filteredCourts.map(court => {
-                    if (court.id === courtId) {
-                        const updatedActiveUsers = newActiveStatus
-                            ? court.activeUsers + 1
-                            : court.activeUsers - 1;
-                        return {
-                            ...court,
-                            userActive: newActiveStatus,
-                            activeUsers: updatedActiveUsers,
-                        };
-                    }
-                    return court;
-                });
-
-                setFilteredCourts(updatedFilteredCourts);
-
-                const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers);
+                    const updatedActiveUsers = updatedCourts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                    setTotalActiveUsers(updatedActiveUsers);
+                } else {
+                    console.error('Failed to update courts after setting active status');
+                }
 
                 setIsPolling(true);
             }
@@ -298,4 +282,5 @@ const PlayNow = () => {
 };
 
 export default PlayNow;
+
 
