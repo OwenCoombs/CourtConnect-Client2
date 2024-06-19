@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Context } from './context';
+import { Link } from 'react-router-dom';
 import UploadImage from './uploadImage';
 import { useNavigate } from 'react-router-dom';
 import { baseUrl, getUserPosts, deletePost } from './api';
@@ -114,6 +115,9 @@ export default function ProfilePage() {
 
   return (
     <section className="personal-profile">
+      <div>
+        <button className='nav-button'> <Link className="profile-playnow" to='/Playnow'>Find Games</Link> </button>
+      </div>
       <div className="profile-container">
         <div className="profile-avatar">
           <UploadImage updateImages={updateImages} />

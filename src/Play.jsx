@@ -5,6 +5,7 @@ import StarRating from './StarRating';
 
 const PlayNow = () => {
     const { auth } = useContext(Context); // Accessing authentication context
+    const [loading, setLoading] = useState(true); // State to track loading status
     const [query, setQuery] = useState(''); // State to store search query
     const [courts, setCourts] = useState([]); // State to store courts data
     const [filteredCourts, setFilteredCourts] = useState([]); // State to store filtered courts
@@ -51,6 +52,8 @@ const PlayNow = () => {
                 }
             } catch (error) {
                 console.error('Failed to fetch courts:', error);
+            } finally {
+                setLoading(false); // Set loading to false when courts are fetched
             }
         };
 
@@ -213,6 +216,18 @@ const PlayNow = () => {
         }));
     };
 
+    if (loading) {
+        // Render loading animation here
+        return (
+        <>
+            <div className="loading-container">
+                <div className="loading-spinner"> <br />  </div>
+            </div>
+        </>
+        );
+    }
+
+    // Render the rest of the component if loading is false
     return (
         <div className="play-now-container">
             <div className="search-container">

@@ -1,11 +1,9 @@
-/* ProfilePage.css */
-
 :root {
-  --primary-color: #B22222; /* Deep Red */
-  --secondary-color: #FFD700; /* Gold */
+  --primary-color: #8A3324; /* Brownish Maroon */
+  --secondary-color: #FF6F00; /* Basketball Orange */
   --accent-color: #000000; /* Black */
-  --background-color: #FFFFFF; /* White */
-  --text-color: #2C3E50; /* Dark Text Color */
+  --background-color: #FAF6F0; /* Off White */
+  --text-color: #000000; /* Black */
 }
 
 body {
@@ -342,12 +340,12 @@ body {
 }
 
 .court-action-button.play {
-  background-color: #28a745;
+  background-color: var(--secondary-color);
   color: white;
 }
 
 .court-action-button.play:hover {
-  background-color: #218838;
+  background-color: var(--primary-color);
 }
 
 .court-action-button.leave {
@@ -750,7 +748,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
-  background-color: #B22222;
+  background-color: var(--primary-color);
   color: #fff;
 }
 
@@ -801,7 +799,7 @@ body {
     left: -250px;
     width: 175px;
     height: 100%;
-    background-color: #B22222;
+    background-color: var(--primary-color);
     padding: 20px;
     gap: 10px;
     transition: left 0.3s ease-in-out;
@@ -831,7 +829,6 @@ body {
 .Toastify {
   z-index: 10000; /* Adjust the value as needed */
 }
-
 
 .star-rating {
   display: inline-block;
@@ -874,44 +871,10 @@ body {
   margin-bottom: 10px;
 }
 
-.review-submit-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.review-submit-button:hover {
-  background-color: #45a049;
-}
-
-/* Styling for the "Leave a Review" button */
-.leave-review-button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.leave-review-button:hover {
-  background-color: #45a049; /* Darker Green */
-}
-
-/* Styling for the "Show Reviews" button */
+.review-submit-button,
+.leave-review-button,
 .toggle-reviews {
-  background-color: #008CBA; /* Blue */
+  background-color: var(--primary-color); /* Use your primary color */
   border: none;
   color: white;
   padding: 10px 20px;
@@ -922,10 +885,61 @@ body {
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
 }
 
+.review-submit-button:hover,
+.leave-review-button:hover,
 .toggle-reviews:hover {
-  background-color: #0073e6; /* Darker Blue */
+  background-color: var(--secondary-color); /* Darken on hover */
+  transform: translateY(-1px); /* Add slight upward lift */
 }
 
+.nav-button {
+  background-color: var(--primary-color); /* Use your primary color */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.nav-button:hover {
+  background-color: var(--secondary-color); /* Darken on hover */
+  transform: translateY(-1px); /* Add slight upward lift */
+}
+
+.profile-playnow {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Loading animation styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid var(--secondary-color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
