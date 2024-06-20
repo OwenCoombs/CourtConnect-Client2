@@ -1,8 +1,5 @@
-// LoadingScreen.js
-
 import React, { useEffect, useState } from "react";
-import logo from './assets/CourtConnect.svg'
-
+import logo from './assets/CourtConnect.svg';
 
 const LoadingScreen = ({ onFinish }) => {
   const [loaded, setLoaded] = useState(false);
@@ -18,10 +15,11 @@ const LoadingScreen = ({ onFinish }) => {
   return (
     <div className={`loading-screen ${loaded ? 'loaded' : ''}`}>
       <div className="logo">
-        <img src={logo} id="Logoscreen"></img>
+        <img src={logo} alt="Loading" id="Logoscreen" />
       </div>
     </div>
   );
 };
 
 export default LoadingScreen;
+
