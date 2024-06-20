@@ -106,23 +106,7 @@ export const getCourts = ({ auth }) => {
 }
 
 
-export const getActiveUsers = async ({ auth }) => {
-  try {
-    const response = await axios.get(`${baseUrl}/get-active-users`, {
-      headers: {
-        Authorization: `Bearer ${auth.accessToken}`
-      }
-    });
-
-    console.log('Active Users: ', response.data);
-    return response.data; // Return the active users data
-  } catch (error) {
-    console.log('ERROR: ', error);
-    throw error; // Re-throw the error to be caught by the caller
-  }
-};
-
-export const setActiveUser = async ({ auth, courtId, setActive }) => {
+export const setActiveUser = async ({ accessToken, courtId, setActive }) => {
   const url = `${baseUrl}/set-active-user`;
   const data = {
       court_id: courtId,
@@ -133,7 +117,7 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
   try {
       const response = await axios.post(url, data, {
           headers: {
-              Authorization: `Bearer ${auth.accessToken}`
+              Authorization: `Bearer ${accessToken}`
           }
       });
       console.log('Response from setActiveUser:', response.data);
@@ -146,6 +130,22 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
           console.error('Unexpected error:', error);
           throw error;
       }
+  }
+};
+
+export const getActiveUsers = async ({ accessToken }) => {
+  try {
+    const response = await axios.get(`${baseUrl}/get-active-users`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    console.log('Active Users: ', response.data);
+    return response.data; // Return the active users data
+  } catch (error) {
+    console.log('ERROR: ', error);
+    throw error; // Re-throw the error to be caught by the caller
   }
 };
 
