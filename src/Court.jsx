@@ -1,8 +1,9 @@
 // Import necessary hooks and components from React and other files
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import StarRating from './StarRating';
 import { setActiveUser, createReview } from "./api";
 import { Context } from './context';
+
 
 // Define the Court component, receiving several props
 const Court = ({ court, courtReviews, isPolling, setCourts, setFilteredCourts, courts, setTotalActiveUsers }) => {
@@ -13,7 +14,9 @@ const Court = ({ court, courtReviews, isPolling, setCourts, setFilteredCourts, c
     const [selectedRating, setSelectedRating] = useState(5);
     // Retrieve authentication information from the context
     const { auth } = useContext(Context);
-
+    useEffect(() => {
+        console.log(`Court ${court.id} userActive:`, court.userActive);
+    }, [court.userActive]);
     // Handle changes in the review text input field
     const handleReviewInputChange = (event) => {
         setReviewText(event.target.value);
@@ -61,31 +64,36 @@ const Court = ({ court, courtReviews, isPolling, setCourts, setFilteredCourts, c
 
     // Handle setting a user as active or inactive for a specific court
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        const newActiveStatus = !currentActiveStatus; // Toggle active status
+        const newActiveStatus = !currentActiveStatus;
 
         try {
-            // Call the setActiveUser API
             const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
 
             if (response.error) {
                 console.error('Error from setActiveUser:', response.error);
-                // Handle error condition if needed
             } else {
-                // Update local state for the current user
+                const userId = auth.userId;
                 setCourts(prevCourts =>
                     prevCourts.map(court =>
-                        court.id === courtId ? { ...court, userActive: newActiveStatus } : court
+                        court.id === courtId ? {
+                            ...court,
+                            active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
+                            userActive: newActiveStatus
+                        } : court
                     )
                 );
 
                 setFilteredCourts(prevCourts =>
                     prevCourts.map(court =>
-                        court.id === courtId ? { ...court, userActive: newActiveStatus } : court
+                        court.id === courtId ? {
+                            ...court,
+                            active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
+                            userActive: newActiveStatus
+                        } : court
                     )
                 );
 
-                // Update total active users based on the updated courts data
-                const updatedActiveUsers = courts.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                const updatedActiveUsers = courts.reduce((count, court) => (court.active_users.some(user => user.id === userId) ? count + 1 : count), 0);
                 setTotalActiveUsers(updatedActiveUsers);
             }
         } catch (error) {
