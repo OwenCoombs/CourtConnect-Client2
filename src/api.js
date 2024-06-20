@@ -1,5 +1,5 @@
 import axios from 'axios'
-// change url
+
 export const baseUrl = "https://courtconnect-server.fly.dev"
 // export const baseUrl = 'http://127.0.0.1:8000'
 
@@ -43,25 +43,22 @@ export const fetchUser = async ({ token, liveProfile, auth }) => {
 };
 
 export const createUser = ({ username, password, firstName, lastName }) => {
-  return new Promise((resolve, reject) => {
-      axios({
-          method: 'post',
-          url: `${baseUrl}/create-user/`,
-          data: {
-              username,
-              password: password,
-              first_name: firstName,
-              last_name: lastName
-          }
-      }).then(response => {
-          console.log('CREATE USER: ', response);
-          resolve(response); // Resolve the promise with the response data
-      }).catch(error => {
-          console.log('ERROR: ', error);
-          reject(error); // Reject the promise with the error
-      });
-  });
-};
+  axios({
+    method: 'post',
+    url: `${baseUrl}/create-user/`, 
+    data: {
+      username,
+      password: password,
+      first_name: firstName,
+      last_name: lastName
+    }
+  }).then(response => {
+    console.log('CREATE USER: ', response)
+  })
+  .catch(error => {
+    console.log('ERROR: ', error)
+  })
+}
 
 export const getImages = ({ auth }) => {
   return axios({
@@ -106,6 +103,22 @@ export const getCourts = ({ auth }) => {
 }
 
 
+export const getActiveUsers = async ({ auth }) => {
+  try {
+    const response = await axios.get(`${baseUrl}/get-active-users`, {
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`
+      }
+    });
+
+    console.log('Active Users: ', response.data);
+    return response.data; // Return the active users data
+  } catch (error) {
+    console.log('ERROR: ', error);
+    throw error; // Re-throw the error to be caught by the caller
+  }
+};
+
 export const setActiveUser = async ({ auth, courtId, setActive }) => {
   const url = `${baseUrl}/set-active-user`;
   const data = {
@@ -130,22 +143,6 @@ export const setActiveUser = async ({ auth, courtId, setActive }) => {
           console.error('Unexpected error:', error);
           throw error;
       }
-  }
-};
-
-export const getActiveUsers = async ({ auth }) => {
-  try {
-    const response = await axios.get(`${baseUrl}/get-active-users`, {
-      headers: {
-        Authorization: `Bearer ${auth.accessToken}`
-      }
-    });
-
-    console.log('Active Users: ', response.data);
-    return response.data; // Return the active users data
-  } catch (error) {
-    console.log('ERROR: ', error);
-    throw error; // Re-throw the error to be caught by the caller
   }
 };
 
