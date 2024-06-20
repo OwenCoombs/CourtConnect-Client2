@@ -106,7 +106,7 @@ export const getCourts = ({ auth }) => {
 }
 
 
-export const setActiveUser = async ({ accessToken, courtId, setActive }) => {
+export const setActiveUser = async ({ auth, courtId, setActive }) => {
   const url = `${baseUrl}/set-active-user`;
   const data = {
       court_id: courtId,
@@ -117,7 +117,7 @@ export const setActiveUser = async ({ accessToken, courtId, setActive }) => {
   try {
       const response = await axios.post(url, data, {
           headers: {
-              Authorization: `Bearer ${accessToken}`
+              Authorization: `Bearer ${auth.accessToken}`
           }
       });
       console.log('Response from setActiveUser:', response.data);
@@ -133,11 +133,11 @@ export const setActiveUser = async ({ accessToken, courtId, setActive }) => {
   }
 };
 
-export const getActiveUsers = async ({ accessToken }) => {
+export const getActiveUsers = async ({ auth }) => {
   try {
     const response = await axios.get(`${baseUrl}/get-active-users`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `Bearer ${auth.accessToken}`
       }
     });
 
