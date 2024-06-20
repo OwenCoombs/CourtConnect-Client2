@@ -17,13 +17,13 @@ const PlayNow = () => {
     // useEffect hook to fetch courts data and start polling if enabled
     useEffect(() => {
         fetchCourts()
-        // if (isPolling) {
-        //     // Start polling for courts data
-        //     const intervalId = setInterval(() => {
-        //         fetchCourts();
-        //     }, 4000); // Polling interval set to 4 seconds
-        //     return () => clearInterval(intervalId); // Clear interval on component unmount
-        // }
+        if (isPolling) {
+            // Start polling for courts data
+            const intervalId = setInterval(() => {
+                fetchCourts();
+            }, 4000); // Polling interval set to 4 seconds
+            return () => clearInterval(intervalId); // Clear interval on component unmount
+        }
     }, [auth, isPolling, isSearching]); // Dependency array for useEffect hook
 
     const fetchCourts = async () => {
