@@ -4,7 +4,7 @@ import { Context } from './context'; // Import the context for accessing authent
 import Court from './Court'; // Import the Court component to render individual courts
 
 const PlayNow = () => {
-    const { auth } = useContext(Context); // Get authentication information from the context
+    const { auth, liveProfile } = useContext(Context); // Get authentication information from the context
     const [loading, setLoading] = useState(true); // State to manage loading status
     const [query, setQuery] = useState(''); // State to manage search query
     const [courts, setCourts] = useState([]); // State to store all courts
@@ -16,54 +16,60 @@ const PlayNow = () => {
 
     // useEffect hook to fetch courts data and start polling if enabled
     useEffect(() => {
-        const fetchCourts = async () => {
-            // Check if authentication token is available
-            if (!auth || !auth.accessToken) {
-                console.error('No access token provided');
-                return;
-            }
-            try {
-                // Fetch courts data from the API
-                const response = await getCourts({ auth });
-                if (response && Array.isArray(response)) {
-                    // Process and update courts data
-                    const userId = auth.userId;
-                    const courtsWithData = response.map(court => {
-                        const userActive = court.active_users.some(user => user.id === userId);
-                        const activeUsers = court.active_users.length;
-                        return {
-                            ...court,
-                            userActive,
-                            activeUsers,
-                        };
-                    });
-                    setCourts(courtsWithData);
-                    // Update filtered courts if not in search mode
-                    if (!isSearching) {
-                        setFilteredCourts(courtsWithData);
-                    }
-                    // Calculate and update total active users count
-                    const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
-                    setTotalActiveUsers(initialActiveUsers);
-                } else {
-                    console.error('No data received for courts');
-                }
-            } catch (error) {
-                console.error('Failed to fetch courts:', error);
-            } finally {
-                setLoading(false); // Update loading state after fetching data
-            }
-        };
-
-        if (isPolling) {
-            // Start polling for courts data
-            const intervalId = setInterval(() => {
-                fetchCourts();
-            }, 4000); // Polling interval set to 4 seconds
-            return () => clearInterval(intervalId); // Clear interval on component unmount
-        }
+        fetchCourts()
+        // if (isPolling) {
+        //     // Start polling for courts data
+        //     const intervalId = setInterval(() => {
+        //         fetchCourts();
+        //     }, 4000); // Polling interval set to 4 seconds
+        //     return () => clearInterval(intervalId); // Clear interval on component unmount
+        // }
     }, [auth, isPolling, isSearching]); // Dependency array for useEffect hook
 
+    const fetchCourts = async () => {
+        // Check if authentication token is available
+        console.log('BLAMMO: FETCH COURTS!')
+        if (!auth || !auth.accessToken) {
+            console.error('No access token provided');
+            return;
+        }
+        try {
+            // Fetch courts data from the API
+            const response = await getCourts({ auth });
+            if (response && Array.isArray(response)) {
+                console.log('BLAMMO: RESPONSE: ', response)
+                // Process and update courts data
+
+                console.log('BLAMMO: PROFILE: ', liveProfile)
+                const username = liveProfile.profile.user.username;
+                const courtsWithData = response.map(court => {
+                    const userActive = court.active_users.some(user => user.username === username);
+                    const activeUsers = court.active_users.length;
+                    return {
+                        ...court,
+                        userActive,
+                        activeUsers,
+                    };
+                });
+                console.log('BLAMMO: COURTS WITH DATA: ', courtsWithData)
+                setCourts(courtsWithData);
+                // Update filtered courts if not in search mode
+                if (!isSearching) {
+                    setFilteredCourts(courtsWithData);
+                }
+                // Calculate and update total active users count
+                const initialActiveUsers = courtsWithData.reduce((count, court) => (court.userActive ? count + 1 : count), 0);
+                setTotalActiveUsers(initialActiveUsers);
+            } else {
+                console.error('No data received for courts');
+            }
+        } catch (error) {
+            console.error('Failed to fetch courts:', error);
+        } finally {
+            setLoading(false); // Update loading state after fetching data
+        }
+    };
+    
     // useEffect hook to fetch reviews for all courts when courts data or authentication changes
     useEffect(() => {
         const fetchReviewsForCourts = async () => {
@@ -147,6 +153,7 @@ const PlayNow = () => {
                 <ul className="courts-container">
                     {filteredCourts.map(court => (
                         <Court
+                            fetchCourts={fetchCourts}
                             key={court.id}
                             court={court}
                             courtReviews={courtReviews}

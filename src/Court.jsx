@@ -5,7 +5,16 @@ import { setActiveUser, createReview } from "./api"; // Importing API functions 
 import { Context } from './context'; // Importing Context for authentication
 
 // Define the Court component, receiving several props
-const Court = ({ court, courtReviews, isPolling, setCourts, setFilteredCourts, courts, setTotalActiveUsers }) => {
+const Court = ({ 
+    court, 
+    courtReviews, 
+    isPolling, 
+    setCourts, 
+    setFilteredCourts, 
+    courts, 
+    setTotalActiveUsers,
+    fetchCourts, 
+}) => {
     // State hooks for managing the visibility of reviews and review forms, review text, and selected rating
     const [showReviews, setShowReviews] = useState({});
     const [showReviewForm, setShowReviewForm] = useState({});
@@ -61,50 +70,53 @@ const Court = ({ court, courtReviews, isPolling, setCourts, setFilteredCourts, c
 
     // Handle setting a user as active or inactive for a specific court
     const handleSetActive = async (courtId, currentActiveStatus) => {
-        const newActiveStatus = !currentActiveStatus;
-    
+        // const newActiveStatus = !currentActiveStatus;
         try {
-            const response = await setActiveUser({ auth, courtId, setActive: newActiveStatus });
-    
+            const response = await setActiveUser({ auth, courtId });
+            console.log('HANDLE SET ACTIVE: RESPONSE: ', response)
+            fetchCourts()
             if (response.error) {
                 console.error('Error from setActiveUser:', response.error);
-            } else {
-                const userId = auth.userId;
-                const court = courts.find(court => court.id === courtId);
+            } 
+            // else {
+
+                // const userId = auth.userId;
+                // const court = courts.find(court => court.id === courtId);
     
-                // Check if the current user is among the active users for the specified court
-                if (!court.active_users.some(user => user.id === userId)) {
-                    console.warn('User is not active on this court. Button state will not be changed.');
-                    return;
-                }
+                // // Check if the current user is among the active users for the specified court
+                // if (!court.active_users.some(user => user.id === userId)) {
+                //     console.warn('User is not active on this court. Button state will not be changed.');
+                //     return;
+                // }
     
-                // Update courts list with user's active status for a specific court
-                setCourts(prevCourts =>
-                    prevCourts.map(court =>
-                        court.id === courtId ? {
-                            ...court,
-                            active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
-                            userActive: newActiveStatus
-                        } : court
-                    )
-                );
-                // Update filtered courts list with user's active status for a specific court
-                setFilteredCourts(prevCourts =>
-                    prevCourts.map(court =>
-                        court.id === courtId ? {
-                            ...court,
-                            active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
-                            userActive: newActiveStatus
-                        } : court
-                    )
-                );
+                // // Update courts list with user's active status for a specific court
+                // setCourts(prevCourts =>
+                //     prevCourts.map(court =>
+                //         court.id === courtId ? {
+                //             ...court,
+                //             active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
+                //             userActive: newActiveStatus
+                //         } : court
+                //     )
+                // );
+                // // Update filtered courts list with user's active status for a specific court
+                // setFilteredCourts(prevCourts =>
+                //     prevCourts.map(court =>
+                //         court.id === courtId ? {
+                //             ...court,
+                //             active_users: newActiveStatus ? [...court.active_users, { id: userId }] : court.active_users.filter(user => user.id !== userId),
+                //             userActive: newActiveStatus
+                //         } : court
+                //     )
+                // );
     
-                // Count and update total active users across all courts
-                const updatedActiveUsers = courts.reduce((count, court) => (court.active_users.some(user => user.id === userId) ? count + 1 : count), 0);
-                setTotalActiveUsers(updatedActiveUsers);
-            }
+                // // Count and update total active users across all courts
+                // const updatedActiveUsers = courts.reduce((count, court) => (court.active_users.some(user => user.id === userId) ? count + 1 : count), 0);
+                // setTotalActiveUsers(updatedActiveUsers);
+            // }
         } catch (error) {
             console.error('Failed to update user status at court:', error);
+
         }
     };
     
