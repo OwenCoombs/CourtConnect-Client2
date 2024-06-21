@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Context } from "./context";
 import { fetchUser, getToken } from "./api";
+import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 // a change has occurred!
 function Login() {
@@ -16,8 +17,9 @@ function Login() {
     try {
       const token = await getToken({ setAccessToken: auth.setAccessToken, username, password });
       console.log('Token:', token); // Check token value
-
+      toast.success("Login Successfull")
       await fetchUser({ token, liveProfile, auth });
+      
       console.log('Navigating to profile page');
       navigate('/profilepage');
     } catch (error) {

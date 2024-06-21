@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { Context } from './context';
 import { createImage } from './api';
+import { ToastContainer, toast } from 'react-toastify';
+
 
 const UploadImage = ({ updateImages }) => {
   const { auth } = useContext(Context);
@@ -12,6 +14,7 @@ const UploadImage = ({ updateImages }) => {
     try {
       console.log('Title value:', title);
       await createImage({ auth, image, title, desc });
+      toast.success("Image uploaded")
       console.log('Image uploaded successfully');
       updateImages();
       clearForm();

@@ -9,8 +9,9 @@
 /* App.css */
 
 
-
-
+.react-router-loading-bar {
+  background-color: #8A3324; /* Change to your desired color */
+}
 
 .bebas-neue-regular {
   font-family: "Bebas Neue", sans-serif;
@@ -49,14 +50,14 @@ body {
 /* For mobile devices */
 @media (max-width: 768px) {
   .hero-image {
-    height: 775px; /* Adjust the height as needed for mobile */
+    height: 675px; /* Adjust the height as needed for mobile */
   }
 }
 
 /* For desktop */
 @media (min-width: 769px) {
   .hero-image {
-    height: 1075px; /* Adjust the height as needed for desktop */
+    height: 935px; /* Adjust the height as needed for desktop */
   }
 
   .hero-text h1 {
@@ -106,6 +107,8 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
+
 
 .cta-button {
   background-color: var(--primary-color);
