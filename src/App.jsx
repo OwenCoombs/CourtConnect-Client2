@@ -38,7 +38,7 @@ function App() {
               className="cta-button"
               onClick={handleFindGames}
             >
-              Get started
+              Find Games
             </button>
             </div>
             <img src={Arrow} className="arrow-down"></img>

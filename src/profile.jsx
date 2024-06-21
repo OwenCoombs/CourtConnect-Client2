@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { baseUrl, getUserPosts, deletePost } from './api';
 import Like from './assets/heart-regular.svg'; // Add a like icon
 
-
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showPostActions, setShowPostActions] = useState(null); // State to manage showing post actions dropdown
@@ -133,36 +132,9 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="profile-details">
-          <div className="info-section">
-            <h6 className="info-header">Information</h6>
-            <hr className="twitter-hr" />
-            {isEditing ? (
-              <div className="info-row">
-                <div className="info-item">
-                  <h6>Your Name: </h6>
-                  <input 
-                    type="text"
-                    value={liveProfile.profile.name}
-                    onChange={handleNameChange}
-                    className="twitter-input"
-                  />
-                </div>
-                <div className="info-item">
-                  <h6>Your Email: </h6>
-                  <input
-                    type="text"
-                    value={liveProfile.profile.email}
-                    onChange={handleEmailChange}
-                    className="twitter-input"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="info-row">
-                <div className="info-item">{liveProfile.profile.name}</div>
-                <div className="info-item">{liveProfile.profile.email}</div>
-              </div>
-            )}
+          <div className="upload-section">
+            <h6 className="info-header">Upload Section</h6>
+            {/* Add your upload form or component here */}
           </div>
           <div className="social-media">
             <h6 className="info-header">Your posts</h6>
@@ -202,4 +174,3 @@ export default function ProfilePage() {
     </section>
   );
 }
-
