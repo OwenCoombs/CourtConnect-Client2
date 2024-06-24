@@ -2,8 +2,8 @@
   --primary-color: #8A3324; /* Brownish Maroon */
   --secondary-color: #FF6F00; /* Basketball Orange */
   --accent-color: #000000; /* Black */
-  --background-color: #FAF6F0; /* Off White */
-  --text-color: #000000; /* Black */
+  --background-color: black; /* Off White */
+  --text-color: white; /* Black */
 }
 
 /* App.css */
@@ -29,6 +29,34 @@ body {
   padding: 0;
   background-color: #f5f5f5;
 }
+.pulsing-box {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 2px solid #4CAF50;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  font-family: Arial, sans-serif;
+  animation: pulse 3s infinite;
+  position: relative; /* Ensure it's positioned relative to its parent */
+  margin: 10px; /* Add some margin for spacing */
+  width: 115px; /* Ensure it doesn't take up the full width */
+}
+
+.white-dot {
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+
+
+
+
+
 
 .App {
   display: flex;

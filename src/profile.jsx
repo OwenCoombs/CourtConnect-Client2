@@ -148,7 +148,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="info-item">
-                  <h6>Your Height: </h6>
+                  <h6>Your Email: </h6>
                   <input
                     type="text"
                     value={liveProfile.profile.email}
