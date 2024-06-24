@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import StarRating from './StarRating';
 import { setActiveUser, createReview } from "./api";
 import { Context } from './context';
-import { ToastContainer, toast } from "react-toastify";
+
 const Court = ({ 
     court, 
     courtReviews, 
@@ -28,7 +28,6 @@ const Court = ({
             const response = await createReview({ auth, courtId, rating: selectedRating, comment: reviewText });
             console.log('Review created:', response);
             setReviewText('');
-            toast.success("Review Uploaded")
             const reviewsResponse = await getCourtReviews({ auth, courtId });
             setCourtReviews(prevReviews => ({
                 ...prevReviews,

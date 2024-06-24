@@ -69,7 +69,7 @@ const PlayNow = () => {
             setLoading(false); // Update loading state after fetching data
         }
     };
-    
+
     // useEffect hook to fetch reviews for all courts when courts data or authentication changes
     useEffect(() => {
         const fetchReviewsForCourts = async () => {
@@ -136,6 +136,10 @@ const PlayNow = () => {
     // Render courts list and total active users count
     return (
         <div className="playnow-container">
+            <div className="pulsing-box">
+                <div className="white-dot"></div>
+                <div>Active: {Math.max(totalActiveUsers, 0)}</div>
+            </div>
             <div className="search-container">
                 <input
                     type="text"
@@ -166,7 +170,6 @@ const PlayNow = () => {
                     ))}
                 </ul>
             </div>
-            <div>Total Active Users: {Math.max(totalActiveUsers, 0)}</div>
         </div>
     );
 };
